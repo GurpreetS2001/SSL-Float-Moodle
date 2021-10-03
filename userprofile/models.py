@@ -31,7 +31,7 @@ class CourseUserRelation(models.Model):
     
 class Lecture(models.Model):
     course = models.ForeignKey(Course,on_delete=CASCADE)
-    user= models.ForeignKey(User,on_delete=CASCADE)
+    # user= models.ForeignKey(User,on_delete=CASCADE)
     title = models.CharField(max_length=150)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -63,6 +63,7 @@ class Quiz(models.Model):
     user = models.ForeignKey(User,on_delete=CASCADE)
     course = models.ForeignKey(Course,on_delete=CASCADE)
     name = models.CharField(max_length=100)
+    description = models.TextField()
     quiz_time = models.DateTimeField()
     end_time = models.DateTimeField()
     max_marks = models.IntegerField()
@@ -71,11 +72,11 @@ class Quiz(models.Model):
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz,on_delete=CASCADE)   #explore related_name
     prob_description = models.TextField()
-    prob_file = models.ImageField(upload_to=f"{quiz.course.name}/quizzes")
+    prob_file = models.FileField(upload_to=f"{quiz.name}/quizzes")
     #how to take mcqs?
 
 class Answer(models.Model):
     quiz = models.ForeignKey(Quiz,on_delete=CASCADE)
     ques = models.ForeignKey(Question,on_delete=CASCADE)
     solution_text = models.TextField()
-    solutionFile = models.FileField(upload_to=f"{quiz.course.name}/quiz_answers")
+    solutionFile = models.FileField(upload_to=f"{quiz.name}/quiz_answers")

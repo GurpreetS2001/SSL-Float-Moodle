@@ -3,10 +3,15 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-  <h2>Lets Moodle</h2>
+<div class="col-sm-5" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+padding: 30px; width:50%; margin-top: 20px;">
+  <h2>Sign Up here</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Sign Up</button>
+    <button type="submit" class="btn btn-secondary">Sign Up</button>
   </form>
+</div>
 {% endblock %}
+
+

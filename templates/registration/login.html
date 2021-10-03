@@ -3,10 +3,13 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-  <h2>Moodling</h2>
+<div class="col-sm-5" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+padding: 30px;  margin-top: 20px;">
+  <h2>Enter credentials to login</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Log In</button>
+    <button type="submit" class="btn btn-secondary">Log In</button>
   </form>
+</div>
 {% endblock %}
