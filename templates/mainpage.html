@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+
+    <style>
+        /*Position and style for the sidebar*/
+          
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            /*Stays in place */
+            background-color: lightgray;
+            /*green*/
+            overflow-x: hidden;
+            /*for Disabling horizontal scroll */
+        }
+        /* Position and style for the sidebar links */
+          
+        .sidebar a {
+            padding: 10px 10px 10px;
+            font-size: 25px;
+            color: #111;
+            display: block;
+            transition: 0.3s;
+        }
+        /* the links change color when mouse hovers upon them*/
+          
+        .sidebar a:hover {
+            color: #FFFFFF;
+        }
+        /* Position and style the for cross button */
+          
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+        }
+        /* Style for the sidebar button */
+          
+
+
+.bar1, .bar2, .bar3 {
+  width: 35px;
+  height: 5px;
+  background-color: white;
+  margin: 6px 0;
+}
+  
+      /* pushes the page content to the right
+      when you open the side navigation */
+          
+        #main {
+            transition: margin-left .5s;
+            /* If you want a transition effect */
+            padding: 10px;
+        }
+    </style>
+
+
+</head>
+<body>
+    <div class="header bg-dark py-5">
+        <div class="container" >
+                  <div class="container" onclick="openNav()" style="border: 3px white; width: 10%; float: left;">
+                    <div class="bar1"></div>
+                    <div class="bar2"></div>
+                    <div class="bar3"></div>
+                  </div>
+                  <div style="width: 90%; float: left;"> <h3 style="color: white; text-align: center;">Float-MOODLE</h3></div>
+                 
+                    <!-- for the sidebar button-->
+            </div>
+        </div>
+    <div style="width: 90%;" >
+        <div id="sidebar" class="sidebar" >
+            <a href="javascript:void(0)" 
+               class="closebtn" 
+               onclick="closeNav()">
+              ×
+          </a>
+            <!--the cross button-->
+            <a href="#">Add Course</a>
+            <a href="#">Register for Course</a>
+            <a href="#">Home</a>
+
+            <a href="#">Your Courses</a>
+        </div>
+
+        <div id="main">
+            {% for course in teacher_courses %}
+            <div class="card" style="width: 18rem; float:left;">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">{{course.code}}</h5>
+                  <p class="card-text">{{course.name}}</p>
+                  <a href="#" class="stretched-link"></a>
+                </div>
+              </div>
+            {% endfor %}
+            
+        </div>
+
+      
+    </div>
+    </body>
+    <script>
+        /* Sets the width of the sidebar 
+        to 250 and the left margin of the 
+        page content to 250 */
+        function openNav() {
+            document.getElementById(
+              "sidebar").style.width = "250px";
+            document.getElementById(
+              "main").style.marginLeft = "250px";
+        }
+      
+        /* Set the width of the sidebar 
+        to 0 and the left margin of the 
+        page content to 0 */
+        function closeNav() {
+            document.getElementById(
+              "sidebar").style.width = "0";
+            document.getElementById(
+              "main").style.marginLeft = "0";
+        }
+    </script>
+
+
+    </div>
+</body>
+</html>

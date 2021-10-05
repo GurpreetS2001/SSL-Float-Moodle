@@ -17,6 +17,7 @@ class Course(models.Model):
     name = models.CharField(max_length=50,primary_key=True)
     color = models.CharField(max_length=7,default='#007bff')
     user = models.ManyToManyField(User)  #not sure about on_delete
+    code = models.CharField(max_length=10,null=True)
 
     def __str__(self):
         return self.name
@@ -26,7 +27,7 @@ class CourseUserRelation(models.Model):
     user = models.ForeignKey(User,on_delete=CASCADE)
     course = models.ForeignKey(Course,on_delete=CASCADE)
     is_teacher = models.BooleanField(default=False)
-    is_student = models.BooleanField(default=True)
+    is_student = models.BooleanField(default=False)
 
     
 class Lecture(models.Model):
