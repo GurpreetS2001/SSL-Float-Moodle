@@ -36,7 +36,7 @@ def MainPage(request,username):
         for relation in course_relation:
             course_ids.append(relation.course_id)
         available_courses=[]
-        learner_courses=[]
+        learner_courses=[]      #course_id[1]   course_relation[1]
         teacher_courses=[]
         for course in all_courses:
             index=course_ids.index(course.pk) if course.pk in course_ids else None

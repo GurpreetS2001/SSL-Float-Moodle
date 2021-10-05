@@ -56,7 +56,7 @@ class Assignments(models.Model):
     start_time = models.DateTimeField(auto_now_add=True)
     submission_time = models.DateTimeField(auto_now=True)
     deadline = models.DateTimeField() 
-
+    #Assignment Solution Model
     def __str__(self):
         return self.course.name
 

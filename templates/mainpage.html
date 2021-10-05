@@ -94,6 +94,7 @@
         </div>
 
         <div id="main">
+          {% csrf_token %}
             {% for course in teacher_courses %}
             <div class="card" style="width: 18rem; float:left;">
                 <img src="..." class="card-img-top" alt="...">
