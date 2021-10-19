@@ -1,0 +1,25 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="col-sm-5" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+padding: 30px;  margin-top: 20px; text-align: center;">
+<p style="text-align: center;">
+<h3>User Details:</h3>
+{{ user.first_name }} {{user.last_name}} (@{{ user.username }})<br>
+Email: {{ user.email }}
+</p>
+</div>
+
+<div class="col-sm-5" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+padding: 30px;  margin-top: 20px; text-align: center;">
+<p style="text-align: center;">
+<h3>Course Details:</h3>
+{% for course in courses %}
+    <a href="{% url 'course_page' name=course.name %}">{{ course.code }}: {{course.name}}</a><br>
+{% endfor %}
+</p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}Add Assignments{% endblock %}
+
+{% block content %}
+<div id="main">
+<div class="card" style="width: 90rem; float:left; margin: auto; border: 3px solid gray;">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h5>Upload new assignment</h5>
+        {{ form.as_p }}
+        <input type="submit" value="Upload">
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}

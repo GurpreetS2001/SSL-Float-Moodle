@@ -1,0 +1,52 @@
+{% extends 'mainpage.html' %}
+
+{% block title %} {{ relation.coursename }} {% endblock %}
+
+{% block content %}
+
+<div id="main">
+<h1><center>{{course.name}}</center></h1>
+{% if relation.is_teacher %}
+<h4><a href="{% url 'add_assign' name=course.name %}">Create Assignment</a></h4>
+{% endif %}
+
+{% for assignment in assignments %}
+    <hr>
+    <div class="card-body">
+      <h5 class="card-title">Due by {{assignment.deadline}}</h5>
+      <p class="card-text">{{assignment.prob_description}}</p>
+      <a href="{{ assignment.problemfile.url }}" download>Problem statement</a><br>
+      <a href="{% url 'view_assign' name=course.name id=assignment.pk %}">View Assignment</a>
+    </div>
+  
+{% endfor %}
+<hr>
+
+{% if relation.is_teacher %}
+<div class="card" style="width: 90rem; float:left; margin: auto; border: 3px solid gray;">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h5>Upload new lecture</h5>
+        {{ form.as_p }}
+        <input type="submit" value="Upload">
+        </form>
+    </div>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><h3>Lectures:</h3><br>
+{% endif %}
+{% if relation.is_student %}<h3>Lectures:</h3>{% endif %}
+{% for lecture in lectures %}
+    <hr>
+    <div class="card-body">
+      <h5 class="card-title">{{lecture.title}}</h5>
+      <p class="card-text">{{lecture.description}}</p>
+      <a href="{{ lecture.lecturenotes.file.url }}" download>Lecture Notes</a>
+    </div>
+  
+{% endfor %}
+<hr>
+
+</div>
+
+{% endblock %}

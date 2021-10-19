@@ -1,0 +1,15 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}Add Course{% endblock %}
+
+{% block content %}
+<div class="col-sm-5" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+padding: 30px;  margin-top: 20px; text-align: center;">
+<form method="post">
+{% csrf_token %}
+<h3>Create new course</h3>
+{{ form.as_p }}
+<input type="submit" value="Submit">
+</form>
+</div>
+{% endblock %}

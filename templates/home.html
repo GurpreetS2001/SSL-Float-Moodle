@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+
+{% if user.is_authenticated %}
+
+<div class="alert alert-warning" role="alert">
+  Hi {{ user.username }}! You did not log out the last time you accessed your profile here.
+</div>
+  <p><a href="{% url 'logout' %}">Log Out</a></p>
+
+  {% else %}
+
+<div class="col-sm-5" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+padding: 30px;  margin-top: 20px; text-align: center;">
+<p style="text-align: center;">
+<h3>Login/Signup to continue</h3></p>
+</div>
+
+{% endif %}
+
+<div class="col-sm-5" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+padding: 30px;  margin-top: 20px; text-align: center;">
+<p style="text-align: center;">
+This Learning Management System has been built by Dhvanit Beniwal (200050035), Gurpreet Singh Wadhwa (200050046), Molina Dhembla(200050076) and Yashvardhan (200050162) as 
+their course project under Prof. Amitabha Sanyal for Software-Systems Lab (CS251- Autumn,2021)
+</p>
+</div>
+
+{% endblock %}
