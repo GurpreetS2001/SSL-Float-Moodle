@@ -1,0 +1,31 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated and user == request.user%}
+<div id="main">
+<h1>Update Profile</h1>
+<br></br>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+<div class = "form-group">
+    <form method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button class="btn btn-secondary">Save Changes</button>
+    </form>
+    <a href="{% url 'change_password' %}" class="btn btn-danger active" role="button" aria-pressed="true">Change Password</a>
+</div>
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}

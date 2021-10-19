@@ -1,8 +1,11 @@
 from django import forms
+from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm
+from django.forms import fields
+from django.forms.widgets import PasswordInput
+from django.contrib.auth.models import User
 
 class CourseCreationForm(forms.Form):
     name = forms.CharField(max_length=50)
-    color = forms.CharField(max_length=7,initial='#007bff')
     code = forms.CharField(max_length=10)
 
 class CourseRegistrationForm(forms.Form):
@@ -25,3 +28,18 @@ class SolutionSubmissionForm(forms.Form):
 
 class SolutionFeedbackForm(forms.Form):
     feedback = forms.CharField(widget=forms.Textarea(attrs={"rows":2, "cols":50, 'placeholder':'Feedback'}),label="")
+
+class ChangePasswordForm(PasswordChangeForm):
+    old_password = forms.CharField(max_length=100,widget=PasswordInput(attrs={'class':'form_control','type':'password'}))
+    new_password1 = forms.CharField(max_length=100,widget=PasswordInput(attrs={'class':'form_control','type':'password'}))
+    new_password2 = forms.CharField(max_length=100,widget=PasswordInput(attrs={'class':'form_control','type':'password'}))
+
+    class Meta:
+        model = User
+        fields = ('old_password','new_password1','new_password2')
+
+class ChangeUserProfileForm(UserChangeForm):
+    password=None
+    class Meta:
+        model = User
+        fields = ('username','first_name','last_name','email')

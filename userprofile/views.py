@@ -2,14 +2,16 @@
 from django.http import response
 from django.urls.base import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordChangeView,PasswordChangeDoneView
 import userprofile
+from django.contrib import messages
 from userprofile.models import Assignments, Course, CourseUserRelation, Lecture, LectureNotes, Solutions, Solutionfeedback
 from userprofile.signup import SignUpForm
 from django.shortcuts import redirect, render
 from django.views import generic
 from django.urls import reverse_lazy
 from datetime import datetime, time,timedelta, tzinfo
-from .forms import CourseCreationForm, CourseRegistrationForm, LectureCreationForm, AssignmentCreationForm, SolutionSubmissionForm, SolutionFeedbackForm
+from .forms import ChangePasswordForm, ChangeUserProfileForm, CourseCreationForm, CourseRegistrationForm, LectureCreationForm, AssignmentCreationForm, SolutionSubmissionForm, SolutionFeedbackForm
 # Create your views here.
 
 class SignUpView(generic.CreateView):
@@ -30,6 +32,9 @@ def MainPage(request):
             if(user==current_user):
                 continue
             time=user.last_login
+            print(datetime.now())
+            print(time)
+            print(timedelta(minutes=5))
             if(datetime.now()<time.replace(tzinfo=None)+timedelta(minutes=5)):    #timestamp with timezone problem
                 logged_in_users.append(user)
         all_courses=Course.objects.all()
@@ -49,6 +54,9 @@ def MainPage(request):
                     learner_courses.append(course)
                 elif(course_relation[index].is_teacher):
                     teacher_courses.append(course)
+        print('-----------')
+        print(logged_in_users)
+        print('-----------')
         contents={
             "available_courses":available_courses,
             "learner_courses":learner_courses,
@@ -61,7 +69,7 @@ def addCourse(request):
     if request.method == 'POST':
         form = CourseCreationForm(request.POST)
         if form.is_valid():
-            newCourse = Course.objects.create(name = form.cleaned_data['name'], color = form.cleaned_data['color'], code = form.cleaned_data['code'])
+            newCourse = Course.objects.create(name = form.cleaned_data['name'], color = '#007bff', code = form.cleaned_data['code'])
             newCourse.save()
             newCourse.user.add(request.user)
             CourseUserRelation.objects.create(user = request.user, course = newCourse, is_teacher = True)
@@ -130,7 +138,7 @@ def addAssign(request,name):
             return redirect(reverse('add_assign', kwargs={'name':name}))
     else:
         form = AssignmentCreationForm()
-    return render(request,'addAssign.html', {'form':form})
+    return render(request,'addAssign.html', {'form':form,'course':course})
 
 def viewAssign(request,name,id):
     course = Course.objects.get(name=name)
@@ -175,10 +183,52 @@ def viewAssign(request,name,id):
     return render(request,'viewAssign.html', args)
 
 def profilePage(request, username):
+    current_user=request.user
     user = User.objects.get(username=username)
     courses = Course.objects.filter(user=user)
+    all_courses=Course.objects.all()
+    course_relation=CourseUserRelation.objects.filter(user_id=current_user.pk)
+    course_ids=[]
+    for relation in course_relation:
+        course_ids.append(relation.course_id)
+    available_courses=[]
+    learner_courses=[]      #course_id[1]   course_relation[1]
+    teacher_courses=[]
+    for course in all_courses:
+        index=course_ids.index(course.pk) if course.pk in course_ids else None
+        if(index==None):
+            available_courses.append(course)
+        else:
+            if(course_relation[index].is_student):
+                learner_courses.append(course)
+            elif(course_relation[index].is_teacher):
+                teacher_courses.append(course)
     args = {
         'user':user,
-        'courses':courses
+        'courses':courses,
+        "available_courses":available_courses,
+        "learner_courses":learner_courses,
+        "teacher_courses":teacher_courses,
+
     }
     return render(request, 'profilePage.html', args)
+
+class PasswordChangeView(PasswordChangeView):
+    template_name = 'changepassword.html'
+    form_class = ChangePasswordForm
+    success_url = reverse_lazy('main_page')
+
+def changeUserProfile(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            rec_form=ChangeUserProfileForm(request.POST,instance=request.user)
+            if rec_form.is_valid():
+                messages.success(request,'Profile Updated')
+                rec_form.save()
+        else:
+            rec_form=ChangeUserProfileForm(instance=request.user)
+        return render(request,'updateProfile.html',{'form':rec_form})
+    else:
+        return response.HttpResponse('Login First')
+
+

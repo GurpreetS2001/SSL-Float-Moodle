@@ -5,65 +5,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{BASE_DIR}}/static/style.css">
+
     <title>{% block title %}Main{% endblock %}</title>
-
-
-    <style>
-        /*Position and style for the sidebar*/
-          
-        .sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            /*Stays in place */
-            background-color: lightgray;
-            /*green*/
-            overflow-x: hidden;
-            /*for Disabling horizontal scroll */
-        }
-        /* Position and style for the sidebar links */
-          
-        .sidebar a {
-            padding: 10px 10px 10px;
-            font-size: 25px;
-            color: #111;
-            display: block;
-            transition: 0.3s;
-        }
-        /* the links change color when mouse hovers upon them*/
-          
-        .sidebar a:hover {
-            color: #FFFFFF;
-        }
-        /* Position and style the for cross button */
-          
-        .sidebar .closebtn {
-            position: absolute;
-            top: 0;
-            right: 25px;
-        }
-        /* Style for the sidebar button */
-          
-
-
-.bar1, .bar2, .bar3 {
-  width: 35px;
-  height: 5px;
-  background-color: white;
-  margin: 6px 0;
-}
-  
-      /* pushes the page content to the right
-      when you open the side navigation */
-          
-        #main {
-            transition: margin-left .5s;
-            /* If you want a transition effect */
-            padding: 10px;
-        }
-    </style>
-
-
+ 
 </head>
 <body>
     <div class="header bg-dark py-5">
@@ -73,9 +21,21 @@
                     <div class="bar2"></div>
                     <div class="bar3"></div>
                   </div>
-                  <div style="width: 90%; float: left;"> <h3 style="color: white; text-align: center;">Float-MOODLE</h3></div>
-                 
-                    <!-- for the sidebar button-->
+                  <div style="width: 70%; float: left;"> <h3 style="color: white; text-align: center;">Float-MOODLE</h3></div>
+                  <div class="dropdown" style="float:left; width:20%; height:30px;" >
+                    <a href="" id="imageDropdown" data-toggle="dropdown">
+                      <img src="https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Clipart.png" alt="" width="50px;" height="50px;" style="float: left;">
+                      <h4 style="color: white; float:left;">{{ user.first_name }} {{user.last_name}}</h4>
+                    </a>
+                   
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="imageDropdown">
+                      <li role="button"><a href="{% url 'profile_page' username=request.user.username %}">Profile</a></li>
+                      <li role="button"></li>
+                      <li role="button"><a href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                  </div>
+                  
+                    
             </div>
         </div>
     <div style="width: 90%;" >
@@ -87,38 +47,57 @@
           </a>
             <!--the cross button-->
             <a href="{% url 'add_course' %}">Add Course</a>
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'profile_page' username=request.user.username %}">My profile</a>
+            <a href="{% url 'main_page' %}">Dashboard</a>
             <a href="{% url 'main_page' %}">Your Courses</a>
             <a href="{% url 'register_course' %}">Register for Course</a>
+            
+            
         </div>
         {% block content %}
+        {% if user.is_authenticated and user == request.user%}
         <div id="main">
           {% csrf_token %}
-          <h2>Registered courses</h2>
+          <div style="width:80%; float:left;">
+          <div>
+          <h2>Courses You Teach</h2>
             {% for course in teacher_courses %}
-            <div class="card" style="width: 18rem; float:left;">
-                <img src="..." class="card-img-top" alt="...">
+            <div class="card" style="width: 300px; float:left; margin:20px; ">
                 <div class="card-body">
-                  <h5 class="card-title">{{course.code}}</h5>
+                  <div class="course" style="height: 60px; background-color: blue;"></div>
+                  <h5 class="card-title bg-light">{{course.code}}</h5>
                   <p class="card-text">{{course.name}}</p>
                   <a href="{% url 'course_page' name=course.name %}" class="stretched-link"></a>
                 </div>
               </div>
             {% endfor %}
-            
+          </div>
+          <hr style="clear:both;">
+          <div>
+            <h2>Courses You Have Registered For</h2>
             {% for course in learner_courses %}
-            <div class="card" style="width: 18rem; float:left;">
-                <img src="..." class="card-img-top" alt="...">
+            <div class="card" style="width: 300px; float:left; margin:20px; ">
                 <div class="card-body">
+                  <div class="course" style="height: 60px; background-color: green;"></div>
                   <h5 class="card-title">{{course.code}}</h5>
                   <p class="card-text">{{course.name}}</p>
                   <a href="{% url 'course_page' name=course.name %}" class="stretched-link"></a>
                 </div>
               </div>
             {% endfor %}
-            
+          </div>
         </div>
+        <div style="width:20%; float:left;">
+          <h3>Currently Online Users:</h3>
+          {% for person in logged_in_users %}
+          <p>{{person.first_name}} {{person.last_name}}</p><br>
+          {% endfor %}
+        </div>
+        </div>
+        {% else %}
+          <div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+          Invalid Access Attempt!
+          </div>
+        {% endif %}
         {% endblock %}
       
     </div>

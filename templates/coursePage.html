@@ -3,9 +3,11 @@
 {% block title %} {{ relation.coursename }} {% endblock %}
 
 {% block content %}
-
+{% if user.is_authenticated and user == request.user%}
 <div id="main">
-<h1><center>{{course.name}}</center></h1>
+<h1>{{course.name}}</h1>
+<h3>{{course.code}}</h3>
+<hr>
 {% if relation.is_teacher %}
 <h4><a href="{% url 'add_assign' name=course.name %}">Create Assignment</a></h4>
 {% endif %}
@@ -48,5 +50,9 @@
 <hr>
 
 </div>
-
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
 {% endblock %}
