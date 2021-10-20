@@ -80,9 +80,9 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'moodle',
-        'USER': 'molina',
-        'PASSWORD': 'sslproject',
+        'NAME': 'moodle_database',
+        'USER': 'gurpreet',
+        'PASSWORD': 'GS@MDoutlab',
         'HOST':'localhost'
     }
 }

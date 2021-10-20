@@ -1,0 +1,18 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated and user == request.user%}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="Submit">
+    </form>
+
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}

@@ -4,6 +4,8 @@ from django.forms import fields
 from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
 
+from userprofile.models import CsvFeedback
+
 class CourseCreationForm(forms.Form):
     name = forms.CharField(max_length=50)
     code = forms.CharField(max_length=10)
@@ -43,3 +45,9 @@ class ChangeUserProfileForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('username','first_name','last_name','email')
+
+class CsvFeedbackSubmissionForm(forms.ModelForm):
+    class Meta:
+        model = CsvFeedback
+        fields = ('feedback_csv',)
+        labels = {'feedback_csv':'Upload Feedback in CSV File'}

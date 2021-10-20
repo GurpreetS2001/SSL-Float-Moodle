@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.deletion import CASCADE, SET_NULL 
 from embed_video.fields import EmbedVideoField
+from django.core.validators import FileExtensionValidator
 # Create your models here.
 
 class Profile(models.Model):
@@ -89,3 +90,8 @@ class Answer(models.Model):
     ques = models.ForeignKey(Question,on_delete=CASCADE)
     solution_text = models.TextField()
     solutionFile = models.FileField(upload_to=f"{quiz.name}/quiz_answers")
+
+class CsvFeedback(models.Model):
+    assignment = models.ForeignKey(Assignments,on_delete=CASCADE)
+    feedback_csv = models.FileField(upload_to='assignments/csv',null=True,blank=True,validators=[FileExtensionValidator(allowed_extensions=['csv'])])
+    active = models.BooleanField(default=True)

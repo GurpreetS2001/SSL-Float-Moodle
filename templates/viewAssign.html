@@ -41,6 +41,10 @@ padding: 30px;  margin-top: 20px; text-align: center;">
         <br>
     {% endfor %}
     <br><br>
+    <a href=""  onclick="downloadAll()">Download All</a>
+    <br><br>
+    <a href="{% url 'upload_csv' name=course.name id=assignment.pk %}" class="btn btn-danger active" role="button" aria-pressed="true">Upload CSV</a>
+    <br><br> 
 {% endif %}
 
 </div>
@@ -50,4 +54,21 @@ padding: 30px;  margin-top: 20px; text-align: center;">
     Invalid Access Attempt!
   </div>
 {% endif %}
+<script>
+    function download(link) {
+        var element = document.createElement('a');
+        element.setAttribute('href', link);
+        element.setAttribute('download',link);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+    var links = JSON.parse("{{ json_links|escapejs }}");
+    function downloadAll() {
+        for (var x in links){
+            download(links[x]);
+        } 
+    }
+</script>
 {% endblock %}

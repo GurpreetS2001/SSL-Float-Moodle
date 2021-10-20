@@ -4,14 +4,16 @@ from django.urls.base import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordChangeView,PasswordChangeDoneView
 import userprofile
+import csv
+import json
 from django.contrib import messages
-from userprofile.models import Assignments, Course, CourseUserRelation, Lecture, LectureNotes, Solutions, Solutionfeedback
+from userprofile.models import Assignments, Course, CourseUserRelation, CsvFeedback, Lecture, LectureNotes, Solutions, Solutionfeedback
 from userprofile.signup import SignUpForm
 from django.shortcuts import redirect, render
 from django.views import generic
 from django.urls import reverse_lazy
 from datetime import datetime, time,timedelta, tzinfo
-from .forms import ChangePasswordForm, ChangeUserProfileForm, CourseCreationForm, CourseRegistrationForm, LectureCreationForm, AssignmentCreationForm, SolutionSubmissionForm, SolutionFeedbackForm
+from .forms import ChangePasswordForm, ChangeUserProfileForm, CourseCreationForm, CourseRegistrationForm, CsvFeedbackSubmissionForm, LectureCreationForm, AssignmentCreationForm, SolutionSubmissionForm, SolutionFeedbackForm
 # Create your views here.
 
 class SignUpView(generic.CreateView):
@@ -174,11 +176,17 @@ def viewAssign(request,name,id):
         else:
             form = SolutionFeedbackForm()
         solutions=Solutions.objects.filter(assignment=assignment)
+        download_links=[]
+        for solution in solutions:
+            download_links.append("http://localhost:8000"+solution.solutionfile.url)
+        json_links=json.dumps(download_links)
     args = {
         'form':form,
         'solutions':solutions,
         'assignment':assignment,
-        'relation':relation
+        'relation':relation,
+        'course':course,
+        'json_links':json_links
     }
     return render(request,'viewAssign.html', args)
 
@@ -231,4 +239,32 @@ def changeUserProfile(request):
     else:
         return response.HttpResponse('Login First')
 
+def CsvFeedbackView(request,name,id):
+    assignment = Assignments.objects.get(pk=id)
+    if request.method == "POST":
+        form = CsvFeedbackSubmissionForm(request.POST,request.FILES)
+        if form.is_valid():
+            csv_obj = CsvFeedback.objects.create(assignment=assignment,feedback_csv=request.FILES['feedback_csv'])
+            with open(csv_obj.feedback_csv.path,'r') as csv_file:
+                reader = csv.reader(csv_file)
+
+                for i,row in enumerate(reader):
+                    if i==0:
+                        pass
+                    else:
+                        if User.objects.filter(username=row[0]).exists():
+                            student=User.objects.get(username=row[0])
+                            solution = Solutions.objects.filter(student=student,assignment=assignment)
+                            if Solutionfeedback.objects.filter(solution=solution[0]).exists:
+                                solution_feedback_object = Solutionfeedback.objects.get(solution=solution[0])
+                                solution_feedback_object.feedback=",".join(row[1:])
+                                solution_feedback_object.save()
+                            else:
+                                solution_feedback_object = Solutionfeedback.objects.create(solution=solution[0],feedback=",".join(row[1:]))
+            csv_obj.active=False
+            csv_obj.save()
+            return redirect(reverse('view_assign', kwargs={'name':name,'id':id}))
+    else:
+        form =CsvFeedbackSubmissionForm()
+        return render(request,'csvfeedback.html',{'form':form})
 
