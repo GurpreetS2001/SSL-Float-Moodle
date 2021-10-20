@@ -176,10 +176,10 @@ def viewAssign(request,name,id):
         else:
             form = SolutionFeedbackForm()
         solutions=Solutions.objects.filter(assignment=assignment)
-        download_links=[]
-        for solution in solutions:
-            download_links.append("http://localhost:8000"+solution.solutionfile.url)
-        json_links=json.dumps(download_links)
+    download_links=[]
+    for solution in solutions:
+        download_links.append("http://127.0.0.1:8000"+solution.solutionfile.url)
+    json_links=json.dumps(download_links)
     args = {
         'form':form,
         'solutions':solutions,

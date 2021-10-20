@@ -18,8 +18,8 @@
         <div class="container" >
                   <div class="container" onclick="openNav()" style="border: 3px white; width: 10%; float: left;">
                     <div class="bar1"></div>
-                    <div class="bar2"></div>
-                    <div class="bar3"></div>
+                    <div class="bar1"></div>
+                    <div class="bar1"></div>
                   </div>
                   <div style="width: 70%; float: left;"> <h3 style="color: white; text-align: center;">Float-MOODLE</h3></div>
                   <div class="dropdown" style="float:left; width:20%; height:30px;" >
@@ -63,7 +63,7 @@
             {% for course in teacher_courses %}
             <div class="card" style="width: 300px; float:left; margin:20px; ">
                 <div class="card-body">
-                  <div class="course" style="height: 60px; background-color: blue;"></div>
+                  <div class="bg-primary py-lg-5"></div>
                   <h5 class="card-title bg-light">{{course.code}}</h5>
                   <p class="card-text">{{course.name}}</p>
                   <a href="{% url 'course_page' name=course.name %}" class="stretched-link"></a>
@@ -75,7 +75,7 @@
           <div>
             <h2>Courses You Have Registered For</h2>
             {% for course in learner_courses %}
-            <div class="card" style="width: 300px; float:left; margin:20px; ">
+            <div class="bg-success py-lg-5"></div>
                 <div class="card-body">
                   <div class="course" style="height: 60px; background-color: green;"></div>
                   <h5 class="card-title">{{course.code}}</h5>
@@ -87,7 +87,7 @@
           </div>
         </div>
         <div style="width:20%; float:left;">
-          <h3>Currently Online Users:</h3>
+          <h3>Users Who Logged In Recently:</h3>
           {% for person in logged_in_users %}
           <p>{{person.first_name}} {{person.last_name}}</p><br>
           {% endfor %}
