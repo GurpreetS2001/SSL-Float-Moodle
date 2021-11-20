@@ -1,0 +1,26 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}Add Assignments{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated and user == request.user%}
+<div id="main">
+<div class="card" style="width: 90rem; margin: auto; border: 3px solid gray;">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h3>Upload New Assignment</h3>
+        {{ form.as_p }}
+        <input type="submit" value="Upload">
+        </form>
+    </div>
+    <hr>
+    <a href="{% url 'course_page' name=course.name %}">Go back to course page</a>
+</div>
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}

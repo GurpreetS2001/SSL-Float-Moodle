@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{BASE_DIR}}/static/style.css">
+
+    <title>{% block title %}Main{% endblock %}</title>
+ 
+</head>
+<body>
+    <div class="header bg-dark py-5">
+        <div class="container" >
+                  <div class="container" onclick="openNav()" style="border: 3px white; width: 10%; float: left;">
+                    <div class="bar1"></div>
+                    <div class="bar1"></div>
+                    <div class="bar1"></div>
+                  </div>
+                  <div style="width: 70%; float: left;"> <h3 style="color: white; text-align: center;">Float-MOODLE</h3></div>
+                  <div class="dropdown" style="float:left; width:20%; height:30px;" >
+                    <a href="" id="imageDropdown" data-toggle="dropdown">
+                      <img src="https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Clipart.png" alt="" width="50px;" height="50px;" style="float: left;">
+                      <h4 style="color: white; float:left;">{{ user.first_name }} {{user.last_name}}</h4>
+                    </a>
+                   
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="imageDropdown">
+                      <li role="button"><a href="{% url 'profile_page' username=request.user.username %}">Profile</a></li>
+                      <li role="button"></li>
+                      <li role="button"><a href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                  </div>
+                  
+                    
+            </div>
+        </div>
+    <div style="width: 90%;" >
+        <div id="sidebar" class="sidebar" >
+            <a href="javascript:void(0)" 
+               class="closebtn" 
+               onclick="closeNav()">
+              ×
+          </a>
+            <!--the cross button-->
+            <a href="{% url 'add_course' %}">Add Course</a>
+            <a href="{% url 'main_page' %}">Dashboard</a>
+            <!-- <a href="{% url 'main_page' %}">Your Courses</a> -->
+            <a href="{% url 'register_course' %}">Register for Course</a>
+            
+            
+        </div>
+        {% block content %}
+        {% if user.is_authenticated and user == request.user%}
+        <div id="main">
+          {% csrf_token %}
+          <div style="width:80%; float:left;">
+          <div>
+          <h2>Courses You Teach</h2>
+            {% for course in teacher_courses %}
+            <div class="card" style="width: 300px; float:left; margin:20px; ">
+                <div class="card-body">
+                  <div class="bg-primary py-lg-5"></div>
+                  <h5 class="card-title bg-light">{{course.code}}</h5>
+                  <p class="card-text">{{course.name}}</p>
+                  <a href="{% url 'course_page' name=course.name %}" class="stretched-link"></a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <hr style="clear:both;">
+          <div>
+            <h2>Courses You Have Registered For</h2>
+            {% for course in learner_courses %}
+            <div class="card" style="width: 300px; float:left; margin:20px; ">
+                <div class="card-body">
+                  <div class="bg-success py-lg-5"></div>
+                  <h5 class="card-title">{{course.code}}</h5>
+                  <p class="card-text">{{course.name}}</p>
+                  <a href="{% url 'course_page' name=course.name %}" class="stretched-link"></a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div style="width:20%; float:left;">
+          <h3>Recently logged in users:</h3>
+          {% for person in logged_in_users %}
+          <p>{{person.first_name}} {{person.last_name}}</p><br>
+          {% endfor %}
+        </div>
+        </div>
+        {% else %}
+          <div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+          Invalid Access Attempt!
+          </div>
+        {% endif %}
+        {% endblock %}
+      
+    </div>
+    </body>
+    <script>
+        /* Sets the width of the sidebar 
+        to 250 and the left margin of the 
+        page content to 250 */
+        function openNav() {
+            document.getElementById(
+              "sidebar").style.width = "250px";
+            document.getElementById(
+              "main").style.marginLeft = "250px";
+        }
+      
+        /* Set the width of the sidebar 
+        to 0 and the left margin of the 
+        page content to 0 */
+        function closeNav() {
+            document.getElementById(
+              "sidebar").style.width = "0";
+            document.getElementById(
+              "main").style.marginLeft = "0";
+        }
+    </script>
+
+
+    </div>
+</body>
+</html>

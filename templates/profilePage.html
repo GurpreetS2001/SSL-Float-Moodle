@@ -1,0 +1,33 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated and user == request.user%}
+<div id="main">
+    <div class="jumbotron" style="margin:30px;">
+        <h1 class="display-4">Hello, {{ user.first_name }} {{user.last_name}}</h1>
+        <h2>User Details</h2>
+        <h4>Username: {{ user.username }}</h4>
+        <h4>Email-id: {{ user.email }} </h4>
+        <p class="lead">
+          <a class="btn btn-primary btn-lg" href="{% url 'updateProfile' %}" role="button">Edit Profile</a>
+        </p>
+        <hr class="my-4">
+        <h2>Course Details</h2>
+        <h3>Courses You Teach</h3>
+        {% for course in teacher_courses %}
+        <a href="{% url 'course_page' name=course.name %}">{{course.code}}: {{course.name}}</a><br>
+        {% endfor %}
+        <h3>Courses You Have Registered For</h3>
+        {% for course in learner_courses %}
+        <a href="{% url 'course_page' name=course.name %}">{{course.code}}: {{course.name}}</a><br>
+        {% endfor %}
+      </div>
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}
