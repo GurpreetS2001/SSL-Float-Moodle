@@ -1,4 +1,3 @@
-
 from django.http import response
 from django.urls.base import reverse
 from django.contrib.auth.models import User
@@ -7,13 +6,13 @@ import userprofile
 import csv
 import json
 from django.contrib import messages
-from userprofile.models import Assignments, Course, CourseUserRelation, CsvFeedback, Lecture, LectureNotes, Solutions, Solutionfeedback
+from userprofile.models import Assignments, Course, CourseUserRelation, CsvFeedback, Lecture, LectureNotes, Solutions, Solutionfeedback,LectureCompleted
 from userprofile.signup import SignUpForm
 from django.shortcuts import redirect, render
 from django.views import generic
 from django.urls import reverse_lazy
 from datetime import datetime, time,timedelta, tzinfo
-from .forms import ChangePasswordForm, ChangeUserProfileForm, CourseCreationForm, CourseRegistrationForm, CsvFeedbackSubmissionForm, LectureCreationForm, AssignmentCreationForm, SolutionSubmissionForm, SolutionFeedbackForm
+from .forms import ChangePasswordForm, ChangeUserProfileForm, CourseCreationForm, CourseRegistrationForm, CsvFeedbackSubmissionForm, LectureCompletionForm, LectureCreationForm, AssignmentCreationForm, SolutionSubmissionForm, SolutionFeedbackForm
 # Create your views here.
 
 class SignUpView(generic.CreateView):
@@ -23,6 +22,13 @@ class SignUpView(generic.CreateView):
 
 def NewLogin(request):
     return redirect(reverse('main_page'))
+
+def CalculatePercentageCourseCompleted(student_courses,user):
+    percentages_list=[]
+    for course in student_courses:
+        course_lectures=Lecture.objects.filter(course=course)
+        for lecture in course_lectures:
+            pass
 
 
 def MainPage(request):
@@ -63,7 +69,8 @@ def MainPage(request):
             "available_courses":available_courses,
             "learner_courses":learner_courses,
             "teacher_courses":teacher_courses,
-            "logged_in_users":logged_in_users
+            "logged_in_users":logged_in_users,
+            'marks': 50
         }
         return render(request,'mainpage.html',contents)
 
@@ -99,21 +106,60 @@ def registerCourse(request):
         form = CourseRegistrationForm()
     return render(request,'registerCourse.html', {'form':form})
 
-def coursePage(request, name):
+def coursePage(request, name , lecture_num=-1):
     relation = CourseUserRelation.objects.filter(user=request.user).get(course__name=name)
     course = Course.objects.get(name=name)
-    lectures = relation.course.lecture_set.all()
+    lectures_content = relation.course.lecture_set.all()
     assignments = course.assignments_set.all()
+    lectures=[]
+    ######
     if request.method == 'POST':
-        form = LectureCreationForm(request.POST, request.FILES)
-        if form.is_valid():
-            newLecture = Lecture.objects.create(course=course, title = form.cleaned_data['title'], description=form.cleaned_data['description'])
-            notes = LectureNotes.objects.create(lecture=newLecture, file=request.FILES['notes'])
-            return redirect(reverse('course_page', kwargs={'name':name}))
-        else:
-            return redirect(reverse('course_page', kwargs={'name':name}))
+        if 'Upload' in request.POST:
+            form = LectureCreationForm(request.POST, request.FILES)
+            #lc_form = LectureCompletionForm()
+            if form.is_valid():
+                newLecture = Lecture.objects.create(course=course, title = form.cleaned_data['title'], description=form.cleaned_data['description'])
+                notes = LectureNotes.objects.create(lecture=newLecture, file=request.FILES['notes'])
+                return redirect(reverse('course_page', kwargs={'name':name,'lecture_num':"-1"}))
+            else:
+                return redirect(reverse('course_page', kwargs={'name':name,'lecture_num':"-1"}))
+        elif 'lec_incomplete' in request.POST:
+            # lc_form = LectureCompletionForm(request.POST)
+            # #form = LectureCreationForm()
+            # if lc_form.is_valid():
+            lecture_num=int(lecture_num)
+            lecture=Lecture.objects.get(pk=lecture_num)
+                #lec_object=LectureCompleted.objects.update_or_create(lecture=lecture,user=request.user,lecture_completed=lc_form.cleaned_data['lecture_completed'])
+            #if LectureCompleted.objects.filter(lecture=lecture).get(user=request.user).exists():
+            try:
+                lec_completed=LectureCompleted.objects.filter(lecture=lecture).get(user=request.user)
+                lec_completed.lecture_completed=True
+                lec_completed.save()
+            except LectureCompleted.DoesNotExist:
+                LectureCompleted.objects.create(lecture=lecture,user=request.user,lecture_completed=True)
+            return redirect(reverse('course_page', kwargs={'name':name,'lecture_num':"-1"}))
+        elif 'lec_completed' in request.POST:
+            lecture_num=int(lecture_num)
+            lecture=Lecture.objects.get(pk=lecture_num)
+                #lec_object=LectureCompleted.objects.update_or_create(lecture=lecture,user=request.user,lecture_completed=lc_form.cleaned_data['lecture_completed'])
+            # if LectureCompleted.objects.filter(lecture=lecture).get(user=request.user)!=:
+            try:
+                lec_completed=LectureCompleted.objects.filter(lecture=lecture).get(user=request.user)
+                lec_completed.lecture_completed=False
+                lec_completed.save()
+            except LectureCompleted.DoesNotExist:
+                LectureCompleted.objects.create(lecture=lecture,user=request.user,lecture_completed=False)
+            return redirect(reverse('course_page', kwargs={'name':name,'lecture_num':"-1"}))
     else:
         form = LectureCreationForm()
+        for lecture in lectures_content:
+            # if LectureCompleted.objects.filter(lecture=lecture).exists():
+            try:
+                completed=LectureCompleted.objects.filter(lecture=lecture).get(user=request.user).lecture_completed
+                lectures.append([lecture,completed])
+            except LectureCompleted.DoesNotExist:
+                lectures.append([lecture,False])
+    print(lectures)
     args = {
         'relation':relation,
         'lectures':lectures,
@@ -121,21 +167,25 @@ def coursePage(request, name):
         'form':form,
         'course':course
     }
+    #####
     return render(request, 'coursePage.html', args)
 
 def addAssign(request,name):
     course = Course.objects.get(name=name)
     if request.method == 'POST':
+        print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
         form = AssignmentCreationForm(request.POST, request.FILES)
         if form.is_valid():
             newAssignment = Assignments.objects.create(
                 course=course,
                 prob_description=form.cleaned_data['p_description'],
                 problemfile=request.FILES['Problem'],
-                deadline=form.cleaned_data['Deadline']
+                deadline=form.cleaned_data['Deadline'],
+                #####
+                max_marks = form.cleaned_data['max_marks'],
+                course_weightage = form.cleaned_data['course_weightage']
             )
-            
-            return redirect(reverse('course_page', kwargs={'name':name}))
+            return redirect(reverse('course_page', kwargs={'name':name,'lecture_num':"-1"}))
         else:
             return redirect(reverse('add_assign', kwargs={'name':name}))
     else:
@@ -146,6 +196,7 @@ def viewAssign(request,name,id):
     course = Course.objects.get(name=name)
     assignment = Assignments.objects.get(pk=id)
     relation = CourseUserRelation.objects.filter(user=request.user).get(course__name=name)
+    past_deadline = (datetime.today()>assignment.deadline)
     if(relation.is_student):
         if request.method == 'POST':
             form = SolutionSubmissionForm(request.POST,request.FILES)
@@ -166,9 +217,14 @@ def viewAssign(request,name,id):
                         if Solutionfeedback.objects.filter(solution=solution).exists():
                             obj = Solutionfeedback.objects.get(solution=solution)
                             obj.feedback = form.cleaned_data['feedback']
+                            #####
+                            obj.marks_obtained = form.cleaned_data['marks_obtained']
+                            #####
                             obj.save()
                         else:
-                            Solutionfeedback.objects.create(solution=solution,feedback=form.cleaned_data['feedback'])
+                            ######
+                            Solutionfeedback.objects.create(solution=solution,feedback=form.cleaned_data['feedback'],marks_obtained=form.cleaned_data['marks_obtained'])
+                            ######
                         #Solutionfeedback.objects.update_or_create(solution=solution,feedback=form.cleaned_data['feedback'])
                         return redirect(reverse('view_assign', kwargs={'name':name,'id':id}))
                     else:
@@ -186,7 +242,8 @@ def viewAssign(request,name,id):
         'assignment':assignment,
         'relation':relation,
         'course':course,
-        'json_links':json_links
+        'json_links':json_links,
+        'past_deadline':past_deadline,
     }
     return render(request,'viewAssign.html', args)
 
@@ -256,15 +313,24 @@ def CsvFeedbackView(request,name,id):
                             student=User.objects.get(username=row[0])
                             solution = Solutions.objects.filter(student=student,assignment=assignment)
                             if Solutionfeedback.objects.filter(solution=solution[0]).exists:
+                                ######
                                 solution_feedback_object = Solutionfeedback.objects.get(solution=solution[0])
-                                solution_feedback_object.feedback=",".join(row[1:])
+                                solution_feedback_object.feedback=",".join(row[1:-1])
+                                solution_feedback_object.marks_obtained=float(row[-1])
                                 solution_feedback_object.save()
                             else:
-                                solution_feedback_object = Solutionfeedback.objects.create(solution=solution[0],feedback=",".join(row[1:]))
+                                solution_feedback_object = Solutionfeedback.objects.create(solution=solution[0],feedback=",".join(row[1:-1]),marks_obtained=float(row[-1]))
+                                #######
             csv_obj.active=False
             csv_obj.save()
             return redirect(reverse('view_assign', kwargs={'name':name,'id':id}))
     else:
         form =CsvFeedbackSubmissionForm()
         return render(request,'csvfeedback.html',{'form':form})
+
+def viewCourseStats(request,name):
+    if request.user.is_authenticated:
+        current_user=request.user
+        
+
 

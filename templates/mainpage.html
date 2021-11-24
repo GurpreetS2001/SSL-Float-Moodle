@@ -9,36 +9,35 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{{BASE_DIR}}/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
 
     <title>{% block title %}Main{% endblock %}</title>
  
 </head>
 <body>
-    <div class="header bg-dark py-5">
-        <div class="container" >
-                  <div class="container" onclick="openNav()" style="border: 3px white; width: 10%; float: left;">
-                    <div class="bar1"></div>
-                    <div class="bar1"></div>
-                    <div class="bar1"></div>
-                  </div>
-                  <div style="width: 70%; float: left;"> <h3 style="color: white; text-align: center;">Float-MOODLE</h3></div>
-                  <div class="dropdown" style="float:left; width:20%; height:30px;" >
-                    <a href="" id="imageDropdown" data-toggle="dropdown">
-                      <img src="https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Clipart.png" alt="" width="50px;" height="50px;" style="float: left;">
-                      <h4 style="color: white; float:left;">{{ user.first_name }} {{user.last_name}}</h4>
-                    </a>
-                   
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="imageDropdown">
-                      <li role="button"><a href="{% url 'profile_page' username=request.user.username %}">Profile</a></li>
-                      <li role="button"></li>
-                      <li role="button"><a href="{% url 'logout' %}">Logout</a></li>
-                    </ul>
-                  </div>
-                  
-                    
-            </div>
-        </div>
-    <div style="width: 90%;" >
+  <div style="height:80px; background-color: black; width:100%">
+    <div class="container" style="float: left; width:5%;">
+      <button class="btn" onclick="openNav()" style="border: 5px; margin:20px;"><i class="fa fa-bars" style="color: white; font-size: 25px; "></i></button>
+    </div>
+                <div style="float: left; text-align:center; width:80%;"> <h3 style="color: white; text-align: center;  ">Float-MOODLE</h3></div>
+
+                <div class="dropdown" style="float:right; height:30px; margin:20px;" >
+                  <a href="" id="imageDropdown" data-toggle="dropdown">
+                    <h4 style="color: white; float:right;">{{ user.first_name }} {{user.last_name}}</h4>
+                    <img src="https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Clipart.png" alt="" width="50px;" height="50px;" style="float: right;">
+                  </a>
+                 
+                  <ul class="dropdown-menu" role="menu" aria-labelledby="imageDropdown">
+                    <li role="button"><a href="{% url 'profile_page' username=request.user.username %}">Profile</a></li>
+                    <li role="button"></li>
+                    <li role="button"><a href="{% url 'logout' %}">Logout</a></li>
+                  </ul>
+                </div>
+                
+  
+      </div>
+    <div style="width: 100%;" >
         <div id="sidebar" class="sidebar" >
             <a href="javascript:void(0)" 
                class="closebtn" 
@@ -66,7 +65,7 @@
                   <div class="bg-primary py-lg-5"></div>
                   <h5 class="card-title bg-light">{{course.code}}</h5>
                   <p class="card-text">{{course.name}}</p>
-                  <a href="{% url 'course_page' name=course.name %}" class="stretched-link"></a>
+                  <a href="{% url 'course_page' name=course.name lecture_num=-1%}" class="stretched-link"></a>
                 </div>
               </div>
             {% endfor %}
@@ -75,18 +74,21 @@
           <div>
             <h2>Courses You Have Registered For</h2>
             {% for course in learner_courses %}
-            <div class="bg-success py-lg-5"></div>
-                <div class="card-body">
-                  <div class="course" style="height: 60px; background-color: green;"></div>
-                  <h5 class="card-title">{{course.code}}</h5>
-                  <p class="card-text">{{course.name}}</p>
-                  <a href="{% url 'course_page' name=course.name %}" class="stretched-link"></a>
+            <div class="card" style="width: 300px; float:left; margin:20px; ">
+              <div class="card-body">
+                <div class="bg-success py-lg-5"></div>
+                <h5 class="card-title bg-light">{{course.code}}</h5>
+                <p class="card-text">{{course.name}}</p>
+                <a href="{% url 'course_page' name=course.name lecture_num=-1%}" class="stretched-link"></a>
+                <div class="progress">
+                  <progress id="myProgress" value="{{ marks }}" max="100" style="width:100%; height: 20px;"></progress>
                 </div>
               </div>
+            </div>
             {% endfor %}
           </div>
         </div>
-        <div style="width:20%; float:left;">
+        <div style="width:15%; float:right;">
           <h3>Users Who Logged In Recently:</h3>
           {% for person in logged_in_users %}
           <p>{{person.first_name}} {{person.last_name}}</p><br>

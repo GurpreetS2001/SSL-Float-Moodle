@@ -17,11 +17,11 @@
         <h2>Course Details</h2>
         <h3>Courses You Teach</h3>
         {% for course in teacher_courses %}
-        <a href="{% url 'course_page' name=course.name %}">{{course.code}}: {{course.name}}</a><br>
+        <a href="{% url 'course_page' name=course.name lecture_num=-1%}">{{course.code}}: {{course.name}}</a><br>
         {% endfor %}
         <h3>Courses You Have Registered For</h3>
         {% for course in learner_courses %}
-        <a href="{% url 'course_page' name=course.name %}">{{course.code}}: {{course.name}}</a><br>
+        <a href="{% url 'course_page' name=course.name lecture_num=-1%}">{{course.code}}: {{course.name}}</a><br>
         {% endfor %}
       </div>
 </div>

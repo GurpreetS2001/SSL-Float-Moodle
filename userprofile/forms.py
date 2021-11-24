@@ -3,8 +3,9 @@ from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm
 from django.forms import fields
 from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
-from userprofile.models import CsvFeedback
+from userprofile.models import CsvFeedback, LectureCompleted
 
 class CourseCreationForm(forms.Form):
     name = forms.CharField(max_length=50)
@@ -23,6 +24,11 @@ class AssignmentCreationForm(forms.Form):
     p_description = forms.CharField(widget=forms.Textarea(attrs={"rows":5, "cols":70, 'placeholder':'Problem description'}),label="")
     Problem = forms.FileField()
     Deadline = forms.DateTimeField(widget=forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'}))
+    #####
+    max_marks = forms.FloatField(widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Maximum Marks','type':'number'}),label="")
+    course_weightage = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Course Weightage','type':'number'}),label="")
+    #####
+
 
 class SolutionSubmissionForm(forms.Form):
     solutionfile = forms.FileField(label='Submission')
@@ -30,6 +36,9 @@ class SolutionSubmissionForm(forms.Form):
 
 class SolutionFeedbackForm(forms.Form):
     feedback = forms.CharField(widget=forms.Textarea(attrs={"rows":2, "cols":50, 'placeholder':'Feedback'}),label="")
+    #####
+    marks_obtained = forms.FloatField(widget=forms.NumberInput(attrs={"rows":1, "cols":20, 'placeholder':'Marks Obtained'}),label="")
+    #####
 
 class ChangePasswordForm(PasswordChangeForm):
     old_password = forms.CharField(max_length=100,widget=PasswordInput(attrs={'class':'form_control','type':'password'}))
@@ -51,3 +60,11 @@ class CsvFeedbackSubmissionForm(forms.ModelForm):
         model = CsvFeedback
         fields = ('feedback_csv',)
         labels = {'feedback_csv':'Upload Feedback in CSV File'}
+
+#####
+class LectureCompletionForm(forms.ModelForm):
+    class Meta:
+        model = LectureCompleted
+        fields = ('lecture_completed',)
+        labels = {'lecture_completed':'Mark as Done'}
+#####

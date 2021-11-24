@@ -15,7 +15,7 @@
         </form>
     </div>
     <hr>
-    <a href="{% url 'course_page' name=course.name %}">Go back to course page</a>
+    <a href="{% url 'course_page' name=course.name lecture_num=-1%}">Go back to course page</a>
 </div>
 </div>
 {% else %}

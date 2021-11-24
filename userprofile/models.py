@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.deletion import CASCADE, SET_NULL 
 from embed_video.fields import EmbedVideoField
 from django.core.validators import FileExtensionValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 class Profile(models.Model):
@@ -48,13 +49,23 @@ class LectureNotes(models.Model):
     lecture = models.OneToOneField(Lecture,on_delete=CASCADE)
     file = models.FileField(upload_to='notes',null=True,blank=True)
 
+#####
+class LectureCompleted(models.Model):
+    lecture = models.ForeignKey(Lecture,on_delete=CASCADE)
+    user = models.ForeignKey(User,on_delete=CASCADE)
+    lecture_completed = models.BooleanField(default=False)
+#####
 
 class Assignments(models.Model):
     course = models.ForeignKey(Course,on_delete=CASCADE)
     prob_description = models.TextField(blank=True)
     problemfile = models.FileField(upload_to='assignments/problem',null=True,blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
-    deadline = models.DateTimeField() 
+    deadline = models.DateTimeField()
+    #####
+    max_marks = models.FloatField()
+    course_weightage = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)])
+    ##### 
     #Assignment Solution Model
     def __str__(self):
         return self.course.name
@@ -68,6 +79,9 @@ class Solutions(models.Model):
 class Solutionfeedback(models.Model):
     solution=models.OneToOneField(Solutions,on_delete=CASCADE)
     feedback = models.TextField(blank=True)
+    #####
+    marks_obtained = models.FloatField()
+    #####
 
 class Quiz(models.Model):
     user = models.ForeignKey(User,on_delete=CASCADE)

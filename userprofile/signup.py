@@ -6,8 +6,8 @@ from django import forms
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=100,required=True)
     last_name = forms.CharField(max_length=100)
-    email_id = forms.EmailField(max_length=256,required=True)
+    email = forms.EmailField(max_length=256,required=True)
 
     class Meta:
         model = User
-        fields = ('first_name','last_name','username','password1','password2','email_id')
+        fields = ('first_name','last_name','username','password1','password2','email')

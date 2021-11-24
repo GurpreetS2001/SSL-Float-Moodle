@@ -3,7 +3,7 @@
 {% block title %} {{ relation.coursename }} {% endblock %}
 
 {% block content %}
-{% if user.is_authenticated and user == request.user%}
+{% if user.is_authenticated and user == request.user %}
 <div id="main">
 <h1>{{course.name}}</h1>
 <h3>{{course.code}}</h3>
@@ -31,24 +31,48 @@
         {% csrf_token %}
         <h5>Upload new lecture</h5>
         {{ form.as_p }}
-        <input type="submit" value="Upload">
+        <input type="submit" value="Upload" name="Upload">
         </form>
     </div>
 </div>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><h3>Lectures:</h3><br>
 {% endif %}
-{% if relation.is_student %}<h3>Lectures:</h3>{% endif %}
+{% if relation.is_student %}<h3>Lectures:</h3>
 {% for lecture in lectures %}
     <hr>
     <div class="card-body">
-      <h5 class="card-title">{{lecture.title}}</h5>
-      <p class="card-text">{{lecture.description}}</p>
-      <a href="{{ lecture.lecturenotes.file.url }}" download>Lecture Notes</a>
+      <h5 class="card-title">{{lecture.0.title}}</h5>
+      <p class="card-text">{{lecture.0.description}}</p>
+      <a href="{{ lecture.0.lecturenotes.file.url }}" download>Lecture Notes</a>
+      {% if lecture.1 %}
+      <form method="post" action="{% url 'course_page' name=course.name lecture_num=lecture.0.pk%}">
+        {% csrf_token %}
+        <input type="submit" name="lec_completed" value="Press to Undo">
+      </form>
+      {% else %}
+      <form method="post" action="{% url 'course_page' name=course.name lecture_num=lecture.0.pk%}">
+        {% csrf_token %}
+        <input type="submit" name="lec_incomplete" value="Lecture Done">
+      </form>
+      {% endif %}
     </div>
   
 {% endfor %}
+{% endif %}
 <hr>
 
+{% if relation.is_teacher %}
+{% for lecture in lectures %}
+    <hr>
+    <div class="card-body">
+      <h5 class="card-title">{{lecture.0.title}}</h5>
+      <p class="card-text">{{lecture.0.description}}</p>
+      <a href="{{ lecture.0.lecturenotes.file.url }}" download>Lecture Notes</a>
+      </form>
+    </div>
+  
+{% endfor %}
+{% endif %}
 </div>
 {% else %}
 <div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
