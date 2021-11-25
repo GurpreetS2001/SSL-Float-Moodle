@@ -64,7 +64,7 @@ class Assignments(models.Model):
     deadline = models.DateTimeField()
     #####
     max_marks = models.FloatField()
-    course_weightage = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)])
+    course_weightage = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
     ##### 
     #Assignment Solution Model
     def __str__(self):

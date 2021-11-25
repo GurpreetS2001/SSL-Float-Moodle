@@ -26,7 +26,7 @@ class AssignmentCreationForm(forms.Form):
     Deadline = forms.DateTimeField(widget=forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'}))
     #####
     max_marks = forms.FloatField(widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Maximum Marks','type':'number'}),label="")
-    course_weightage = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Course Weightage','type':'number'}),label="")
+    course_weightage = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)],widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Course Weightage','type':'number'}),label="")
     #####
 
 

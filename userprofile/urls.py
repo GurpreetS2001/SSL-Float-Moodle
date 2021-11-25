@@ -12,6 +12,7 @@ urlpatterns = [
     path('users/<str:username>/',views.profilePage,name='profile_page'),
     path('courses/<str:name>/add_new_assignment/',views.addAssign,name='add_assign'),
     path('courses/<str:name>/assignment/<int:id>/',views.viewAssign,name='view_assign'),
+    ####
     path('courses/<str:name>/<str:lecture_num>/',views.coursePage,name='course_page'),
     path('changepass/',views.PasswordChangeView.as_view(),name='change_password'),
     path('updateprofile/',views.changeUserProfile,name='updateProfile'),

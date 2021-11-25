@@ -27,8 +27,25 @@ def CalculatePercentageCourseCompleted(student_courses,user):
     percentages_list=[]
     for course in student_courses:
         course_lectures=Lecture.objects.filter(course=course)
+        total_lectures=len(course_lectures)
+        completed_lectures_count=0
         for lecture in course_lectures:
-            pass
+            try:
+                if LectureCompleted.objects.filter(lecture=lecture).get(user=user).lecture_completed:
+                    completed_lectures_count+=1
+            except LectureCompleted.DoesNotExist:
+                continue
+        course_assignments=Assignments.objects.filter(course=course)
+        percentage_assignments_completed=0
+        for assignment in course_assignments:
+            try:
+                solution=Solutions.objects.filter(assignment=assignment).get(user=user)
+                percentage_assignments_completed+=assignment.course_weightage
+            except Solutions.DoesNotExist:
+                continue
+        percentage_course_completed=(completed_lectures_count/total_lectures)*50+percentage_assignments_completed/2
+        percentages_list.append([course,percentage_course_completed])
+    return percentages_list
 
 
 def MainPage(request):
@@ -67,10 +84,9 @@ def MainPage(request):
         print('-----------')
         contents={
             "available_courses":available_courses,
-            "learner_courses":learner_courses,
+            "learner_courses":CalculatePercentageCourseCompleted(learner_courses,request.user),
             "teacher_courses":teacher_courses,
             "logged_in_users":logged_in_users,
-            'marks': 50
         }
         return render(request,'mainpage.html',contents)
 
