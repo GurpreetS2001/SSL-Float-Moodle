@@ -1,0 +1,42 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}Members{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated and user == request.user%}
+<div id="main">
+
+<h4><a href="{% url 'course_page' name=course.name %}">Back to course</a></h4>  <!--dhvanit-->
+<h1>Enrolled TAs:</h1>
+
+{% for ta in tas %}
+    <hr>
+    <h4>{{ ta.user.username }}</h4>
+{% endfor %}
+<hr>
+
+{% if relation.is_teacher %}
+<div class="card-body">
+    <form method="post">
+    {% csrf_token %}
+    <h3>Set TA Privileges (all)</h3>
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+    </form>
+</div>
+{% endif %}
+
+<h1>Enrolled Students:</h1>
+{% for student in students %}
+    <hr>
+    <h4>{{ student.user.username }}</h4>
+{% endfor %}
+<hr>
+
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}

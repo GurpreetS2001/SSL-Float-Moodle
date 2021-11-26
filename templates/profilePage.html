@@ -3,23 +3,30 @@
 {% block title %}{{ user.username }}{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated and user == request.user%}
+{% if current_user.is_authenticated and current_user == request.user%}  <!--dhvanit-->
 <div id="main">
     <div class="jumbotron" style="margin:30px;">
-        <h1 class="display-4">Hello, {{ user.first_name }} {{user.last_name}}</h1>
+        {% if current_user == user %} <!--dhvanit-->
+          <h1 class="display-4">Hello, {{ user.first_name }} {{user.last_name}}</h1>
+        {% endif %} <!--dhvanit-->
         <h2>User Details</h2>
+        {% if current_user != user %} <!--dhvanit-->
+          <a href="{% url 'direct_message' username=user.username %}">Direct Message</a>
+        {% endif %} <!--dhvanit-->
         <h4>Username: {{ user.username }}</h4>
         <h4>Email-id: {{ user.email }} </h4>
-        <p class="lead">
-          <a class="btn btn-primary btn-lg" href="{% url 'updateProfile' %}" role="button">Edit Profile</a>
-        </p>
+        {% if current_user == user %} <!--dhvanit-->
+          <p class="lead">
+            <a class="btn btn-primary btn-lg" href="{% url 'updateProfile' %}" role="button">Edit Profile</a>
+          </p>  <!--dhvanit-->
+        {% endif %}
         <hr class="my-4">
         <h2>Course Details</h2>
-        <h3>Courses You Teach</h3>
+        <h3>Teaching Courses</h3> <!--dhvanit-->
         {% for course in teacher_courses %}
         <a href="{% url 'course_page' name=course.name %}">{{course.code}}: {{course.name}}</a><br>
         {% endfor %}
-        <h3>Courses You Have Registered For</h3>
+        <h3>Registered for Courses</h3> <!--dhvanit-->
         {% for course in learner_courses %}
         <a href="{% url 'course_page' name=course.name %}">{{course.code}}: {{course.name}}</a><br>
         {% endfor %}

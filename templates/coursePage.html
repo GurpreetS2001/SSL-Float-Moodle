@@ -1,6 +1,6 @@
 {% extends 'mainpage.html' %}
 
-{% block title %} {{ relation.coursename }} {% endblock %}
+{% block title %} {{ course.name }} {% endblock %} <!--dhvanit-->
 
 {% block content %}
 {% if user.is_authenticated and user == request.user%}
@@ -8,7 +8,20 @@
 <h1>{{course.name}}</h1>
 <h3>{{course.code}}</h3>
 <hr>
-{% if relation.is_teacher %}
+<h4><a href="{% url 'course_members' name=course.name %}">View course members</a></h4>  <!--dhvanit-->
+
+<hr>
+<h4>
+  <a href="{% url 'course_forum' name=course.name %}">Discussion Forum</a>
+  {% if relation.is_teacher %}
+    {% if course.forums_enabled %}<a href="{% url 'disable_forum' name=course.name %}">(Disable)</a>
+    {% else %}<a href="{% url 'enable_forum' name=course.name %}">(Enable)</a>
+    {% endif %}
+  {% endif %}
+</h4>  <!--dhvanit-->
+
+<hr>  <!--dhvanit-->
+{% if privileges.can_create_assignments %}  <!--dhvanit-->
 <h4><a href="{% url 'add_assign' name=course.name %}">Create Assignment</a></h4>
 {% endif %}
 
@@ -24,7 +37,7 @@
 {% endfor %}
 <hr>
 
-{% if relation.is_teacher %}
+{% if privileges.can_create_lectures %} <!--dhvanit-->
 <div class="card" style="width: 90rem; float:left; margin: auto; border: 3px solid gray;">
     <div class="card-body">
         <form method="post" enctype="multipart/form-data">
@@ -35,9 +48,10 @@
         </form>
     </div>
 </div>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><h3>Lectures:</h3><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br> <!--dhvanit-->
 {% endif %}
-{% if relation.is_student %}<h3>Lectures:</h3>{% endif %}
+
+<h3>Lectures:</h3>  <!--dhvanit-->
 {% for lecture in lectures %}
     <hr>
     <div class="card-body">
