@@ -13,6 +13,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from datetime import datetime, time,timedelta, tzinfo
 from .forms import ChangePasswordForm, ChangeUserProfileForm, CourseCreationForm, CourseRegistrationForm, CsvFeedbackSubmissionForm, LectureCompletionForm, LectureCreationForm, AssignmentCreationForm, SolutionSubmissionForm, SolutionFeedbackForm
+from .aggregates import CalculateCourseMarksStudent, CalculatePercentageCourseCompleted, GenerateTeacherStatsAssignment, GenerateTeacherStatsCourse
 # Create your views here.
 
 class SignUpView(generic.CreateView):
@@ -22,31 +23,6 @@ class SignUpView(generic.CreateView):
 
 def NewLogin(request):
     return redirect(reverse('main_page'))
-
-def CalculatePercentageCourseCompleted(student_courses,user):
-    percentages_list=[]
-    for course in student_courses:
-        course_lectures=Lecture.objects.filter(course=course)
-        total_lectures=len(course_lectures)
-        completed_lectures_count=0
-        for lecture in course_lectures:
-            try:
-                if LectureCompleted.objects.filter(lecture=lecture).get(user=user).lecture_completed:
-                    completed_lectures_count+=1
-            except LectureCompleted.DoesNotExist:
-                continue
-        course_assignments=Assignments.objects.filter(course=course)
-        percentage_assignments_completed=0
-        for assignment in course_assignments:
-            try:
-                solution=Solutions.objects.filter(assignment=assignment).get(user=user)
-                percentage_assignments_completed+=assignment.course_weightage
-            except Solutions.DoesNotExist:
-                continue
-        percentage_course_completed=(completed_lectures_count/total_lectures)*50+percentage_assignments_completed/2
-        percentages_list.append([course,percentage_course_completed])
-    return percentages_list
-
 
 def MainPage(request):
     if(User.is_authenticated):
@@ -199,7 +175,8 @@ def addAssign(request,name):
                 deadline=form.cleaned_data['Deadline'],
                 #####
                 max_marks = form.cleaned_data['max_marks'],
-                course_weightage = form.cleaned_data['course_weightage']
+                course_weightage = form.cleaned_data['course_weightage'],
+                assignment_name=form.cleaned_data['assignment_name']
             )
             return redirect(reverse('course_page', kwargs={'name':name,'lecture_num':"-1"}))
         else:
@@ -212,7 +189,7 @@ def viewAssign(request,name,id):
     course = Course.objects.get(name=name)
     assignment = Assignments.objects.get(pk=id)
     relation = CourseUserRelation.objects.filter(user=request.user).get(course__name=name)
-    past_deadline = (datetime.today()>assignment.deadline)
+    past_deadline = (datetime.now()>assignment.deadline)
     if(relation.is_student):
         if request.method == 'POST':
             form = SolutionSubmissionForm(request.POST,request.FILES)
@@ -252,6 +229,12 @@ def viewAssign(request,name,id):
     for solution in solutions:
         download_links.append("http://127.0.0.1:8000"+solution.solutionfile.url)
     json_links=json.dumps(download_links)
+    submission_exists=False
+    try:
+        sol=Solutions.objects.filter(assignment=assignment).get(student=request.user)
+        submission_exists=True
+    except Solutions.DoesNotExist:
+        pass
     args = {
         'form':form,
         'solutions':solutions,
@@ -260,6 +243,7 @@ def viewAssign(request,name,id):
         'course':course,
         'json_links':json_links,
         'past_deadline':past_deadline,
+        'submission_exists':submission_exists,
     }
     return render(request,'viewAssign.html', args)
 
@@ -344,9 +328,49 @@ def CsvFeedbackView(request,name,id):
         form =CsvFeedbackSubmissionForm()
         return render(request,'csvfeedback.html',{'form':form})
 
-def viewCourseStats(request,name):
+
+def StudentCourseStats(request,name):
     if request.user.is_authenticated:
-        current_user=request.user
+        course=Course.objects.get(name=name)
+        if CourseUserRelation.objects.filter(course=course).get(user=request.user).is_student:
+            student_assignmentwise_stats,total_marks,percentage_score=CalculateCourseMarksStudent(course,request.user)
+            args={
+                'course':course,
+                'assignmentwise_stats':student_assignmentwise_stats,
+                'total_marks':total_marks,
+                'percentage_score':percentage_score
+            }
+            return render(request,'student_stats.html',args)
+        else:
+            return response.HttpResponse('Teacher hai bhai tu')
+    else:
+        redirect(reverse('login'))    
         
+def TeacherAssignmentStats(request,name,id):
+    if request.user.is_authenticated:
+        course=Course.objects.get(name=name)
+        assignment=Assignments.objects.filter(course=course).get(pk=id)
+        mean,variance,scatter_url,hist_url=GenerateTeacherStatsAssignment(course,assignment)
+        args={
+            'mean':mean,
+            'variance':variance,
+            'scatter_url':scatter_url,
+            'hist_url':hist_url
+        }
+        return render(request,'assignment_stats.html',args)
 
 
+
+def TeacherCourseStats(request,name):
+    if request.user.is_authenticated:
+        course=Course.objects.get(name=name)
+        all_students,total_score_list,percent_score_list,score_histogram_url,percent_histogram_url=GenerateTeacherStatsCourse(course)
+        students_data=list(zip(all_students,total_score_list,percent_score_list))
+        args={
+            'students_data':students_data,
+            'score_hist_url':score_histogram_url,
+            'per_hist_url':percent_histogram_url
+        }
+        return render(request,'course_stats.html',args)
+    else:
+        redirect(reverse('login')) 

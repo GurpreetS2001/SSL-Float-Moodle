@@ -5,17 +5,21 @@
 {% block content %}
 {% if user.is_authenticated and user == request.user%}
 <div id="main">
-<div class="card" style="width: 90rem; margin: auto; border: 3px solid gray;">
+    <div class="col-sm-9" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+    padding: 30px;  margin-top: 20px; text-align: center;">
     <div class="card-body">
         <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <h3>Upload New Assignment</h3>
+        <hr>
+        <center>
         {{ form.as_p }}
-        <input type="submit" value="Upload">
+        </center>
+        <input class="btn btn-primary active" type="submit" value="Upload">
         </form>
     </div>
     <hr>
-    <a href="{% url 'course_page' name=course.name lecture_num=-1%}">Go back to course page</a>
+    <a href="{% url 'course_page' name=course.name lecture_num=-1%}"> &lt;&lt; Go back to course page</a>
 </div>
 </div>
 {% else %}

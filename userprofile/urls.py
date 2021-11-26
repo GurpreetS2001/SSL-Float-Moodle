@@ -16,6 +16,8 @@ urlpatterns = [
     path('courses/<str:name>/<str:lecture_num>/',views.coursePage,name='course_page'),
     path('changepass/',views.PasswordChangeView.as_view(),name='change_password'),
     path('updateprofile/',views.changeUserProfile,name='updateProfile'),
-    path('courses/<str:name>/assignment/<int:id>/upload_csv',views.CsvFeedbackView,name='upload_csv'),
-    path('courses/<str:name>/course_stats/',views.viewCourseStats,name='course_stats')
+    path('courses/<str:name>/assignment/<int:id>/upload_csv/',views.CsvFeedbackView,name='upload_csv'),
+    path('courses/<str:name>/student/course_stats/',views.StudentCourseStats,name="student_course_stats"),
+    path('courses/<str:name>/assignment/<int:id>/stats/',views.TeacherAssignmentStats,name="assignment_stats"),
+    path('courses/<str:name>/teacher/course_stats/',views.TeacherCourseStats,name="teacher_course_stats")
 ]
