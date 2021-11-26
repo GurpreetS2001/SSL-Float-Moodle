@@ -21,17 +21,19 @@ class LectureCreationForm(forms.Form):
     notes = forms.FileField()
 
 class AssignmentCreationForm(forms.Form):
+    assignment_name=forms.CharField(max_length=100)
     p_description = forms.CharField(widget=forms.Textarea(attrs={"rows":5, "cols":70, 'placeholder':'Problem description'}),label="")
-    Problem = forms.FileField()
+    Problem= forms.FileField(label="Upload Problem File")
     Deadline = forms.DateTimeField(widget=forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'}))
     #####
-    max_marks = forms.FloatField(widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Maximum Marks','type':'number'}),label="")
-    course_weightage = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)],widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Course Weightage','type':'number'}),label="")
+    max_marks = forms.FloatField(widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Maximum Marks','type':'number'}),label="Maximum Marks")
+    course_weightage = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)],widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Course Weightage','type':'number'}),label="Assignment weightage")
     #####
 
 
 class SolutionSubmissionForm(forms.Form):
     solutionfile = forms.FileField(label='Submission')
+    #solutionfile = forms.FileField(label="Submission", widget=forms.ClearableFileInput(attrs={'class': "choose_file"}))
     #sol_description = forms.CharField(widget=forms.Textarea(attrs={"rows":2, "cols":50, 'placeholder':'Solution Description'}),label="",required=False)
 
 class SolutionFeedbackForm(forms.Form):

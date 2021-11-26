@@ -36,15 +36,19 @@ def CalculatePercentageCourseCompleted(student_courses,user):
             except LectureCompleted.DoesNotExist:
                 continue
         course_assignments=Assignments.objects.filter(course=course)
+        total_assignments=len(course_assignments)
         percentage_assignments_completed=0
         for assignment in course_assignments:
             try:
-                solution=Solutions.objects.filter(assignment=assignment).get(user=user)
-                percentage_assignments_completed+=assignment.course_weightage
+                solution=Solutions.objects.filter(assignment=assignment).get(student=user)
+                percentage_assignments_completed+=1
             except Solutions.DoesNotExist:
                 continue
-        percentage_course_completed=(completed_lectures_count/total_lectures)*50+percentage_assignments_completed/2
-        percentages_list.append([course,percentage_course_completed])
+        if total_lectures+total_assignments!=0:
+            percentage_course_completed=(completed_lectures_count+percentage_assignments_completed)*100/(total_lectures+total_assignments)
+        else:
+            percentage_course_completed=0
+        percentages_list.append([course,round(percentage_course_completed,2)])
     return percentages_list
 
 
@@ -82,9 +86,10 @@ def MainPage(request):
         print('-----------')
         print(logged_in_users)
         print('-----------')
+        learner_courses=CalculatePercentageCourseCompleted(learner_courses,request.user)
         contents={
             "available_courses":available_courses,
-            "learner_courses":CalculatePercentageCourseCompleted(learner_courses,request.user),
+            "learner_courses":learner_courses,
             "teacher_courses":teacher_courses,
             "logged_in_users":logged_in_users,
         }
@@ -199,7 +204,8 @@ def addAssign(request,name):
                 deadline=form.cleaned_data['Deadline'],
                 #####
                 max_marks = form.cleaned_data['max_marks'],
-                course_weightage = form.cleaned_data['course_weightage']
+                course_weightage = form.cleaned_data['course_weightage'],
+                assignment_name=form.cleaned_data['assignment_name']
             )
             return redirect(reverse('course_page', kwargs={'name':name,'lecture_num':"-1"}))
         else:
@@ -252,6 +258,12 @@ def viewAssign(request,name,id):
     for solution in solutions:
         download_links.append("http://127.0.0.1:8000"+solution.solutionfile.url)
     json_links=json.dumps(download_links)
+    submission_exists=False
+    try:
+        sol=Solutions.objects.filter(assignment=assignment).get(student=request.user)
+        submission_exists=True
+    except Solutions.DoesNotExist:
+        pass
     args = {
         'form':form,
         'solutions':solutions,
@@ -260,6 +272,7 @@ def viewAssign(request,name,id):
         'course':course,
         'json_links':json_links,
         'past_deadline':past_deadline,
+        'submission_exists':submission_exists
     }
     return render(request,'viewAssign.html', args)
 

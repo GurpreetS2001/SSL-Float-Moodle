@@ -6,11 +6,13 @@
 {% if user.is_authenticated and user == request.user%}
 <div id="main">
 <h1>Update Profile</h1>
-<br></br>
+<a href="{% url 'change_password' %}" class="btn btn-danger active" role="button" aria-pressed="true">Change Password</a>
+    <br>
+<br>
 {% if messages %}
 <ul class="messages">
     {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    <li{% if message.tags %} class="{{ message.tags }}" {% endif %}> <h4 class="alert alert-success" role="alert" style="width:30%; margin-top: 20px;">{{ message }} </h4></li>
     {% endfor %}
 </ul>
 {% endif %}
@@ -18,9 +20,10 @@
     <form method="POST">
         {% csrf_token %}
         {{form.as_p}}
-        <button class="btn btn-secondary">Save Changes</button>
+        <button class="btn btn-secondary">Save Changes</button>     
     </form>
-    <a href="{% url 'change_password' %}" class="btn btn-danger active" role="button" aria-pressed="true">Change Password</a>
+    <br>
+    <a href="{% url 'profile_page' username=request.user.username %}"> &lt;&lt; Go back to your profile</a>
 </div>
 </div>
 {% else %}

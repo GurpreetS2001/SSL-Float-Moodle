@@ -51,4 +51,13 @@ when you open the side navigation */
     padding: 10px;
 }
 
+.choose_file{
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
 
+.asteriskField{
+    display: none;
+}

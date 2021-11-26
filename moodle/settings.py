@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'embed_video',
+    'crispy_forms'
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,9 +83,9 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'moodle_database',
-        'USER': 'gurpreet',
-        'PASSWORD': 'GS@MDoutlab',
+        'NAME': 'moodle',
+        'USER': 'molina',
+        'PASSWORD': 'sslproject',
         'HOST':'localhost'
     }
 }
@@ -138,3 +141,4 @@ LOGOUT_REDIRECT_URL = 'home'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, '')
 MEDIA_URL = '/media/'
+

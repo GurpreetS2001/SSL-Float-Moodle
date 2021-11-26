@@ -1,44 +1,62 @@
 {% extends 'mainpage.html' %}
+{% load crispy_forms_tags %}
 
-{% block title %}Add Course{% endblock %}
+{% block title %}Assigment{% endblock %}
 
 {% block content %}
 {% if user.is_authenticated and user == request.user %}
 <div id="main">
-    <div class="col-sm-9" style="background-color: lightgray; margin: auto; border: 3px solid gray;
-padding: 30px;  margin-top: 20px; text-align: center;">
-
+    <div class="col-sm-9" style="background-color: lightgray; margin: auto; border: 3px solid gray; text-align: center; width:75%; padding:2%">
+        <h3>{{ assignment.assignment_name }}</h3>
+        <p>{{ assignment.prob_description }}</p>
+        <hr>
         <h4>Published on {{ assignment.start_time }}</h4>
         <h4>Due by {{ assignment.deadline }}</h4>
-        <p>{{ assignment.prob_description }}</p>
-        <a href="{{ assignment.problemfile.url }}" download>Problem statement</a>
+        
+        <a href="{{ assignment.problemfile.url }}" download>
+            <button class="btn btn-primary active" role="button" style="width:20%"><i class="fa fa-download"></i> Download Problem Statement</button>
+        </a>
+       
         <br><br>
 
         {% if relation.is_student %}
-        {% for solution in solutions %}
-        <a href="{{ solution.solutionfile.url }}" download>
-        <button class="btn btn-success active" role="button" style="width:20%"><i class="fa fa-download"></i> Download your submission</button>
-        </a>
-        {% endfor %}
+        
         <br><br>
         {% if not past_deadline%}
+        
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Submit">
+            <center>
+                {{ form|crispy }}
+            </center>
+        
+            <input class="btn btn-success active" type="submit" value="Submit">
         </form>
+    
         {% endif %}
-        <br>
+        <br><br><br><br>
+        {% if submission_exists %}
+        <div class="alert alert-success" role="alert">
+            <h4 class="glyphicon glyphicon-check" aria-hidden="true"></h4> Submitted!
+        </div>
+        {% endif %}
+        
         {% for solution in solutions %}
-        <h5>Feedback on submission:</h5>
+        <b>Feedback on submission:<b>
         <p>{{ solution.solutionfeedback.feedback }}</p>
-        <h5>Marks Obtained:</h5>
+        <b>Marks Obtained:</b>
         <p>{{ solution.solutionfeedback.marks_obtained }}</p>
+        {% endfor %}
+        {% for solution in solutions %}
+        <a href="{{ solution.solutionfile.url }}" download>
+        <button class="btn btn-info active" role="button" style="width:20%"><i class="fa fa-download"></i> Download your submission</button>
+        </a>
         {% endfor %}
         {% endif %}
 
         {% if relation.is_teacher %}
-        <h5>Submissions:</h5>
+        <hr>
+        <h3><b>Submissions:</b></h3>
         {% for solution in solutions %}
         <form method="post">
             {% csrf_token %}
@@ -46,21 +64,22 @@ padding: 30px;  margin-top: 20px; text-align: center;">
             {{ form }}
             <input type="submit" value="Submit" name="{{ solution.student.pk }}">
         </form>
-        <br>
-        <h5>Feedback on submission:</h5>
-        <p>{{ solution.solutionfeedback.feedback }}</p>
-        <h5>Marks Obtained:</h5>
+        <p>
+        <b>Feedback on submission: </b>
+        {{ solution.solutionfeedback.feedback }} </p>
+        <b>Marks Obtained:</b>
         <p>{{ solution.solutionfeedback.marks_obtained }}</p>
         <br>
         {% endfor %}
         <br><br>
         <a href="" onclick="downloadAll()" class="btn btn-success active" role="button" style="width:20%"><i class="fa fa-download"></i> Download all submissions</a>
         <br><br>
-        <a href="{% url 'upload_csv' name=course.name id=assignment.pk %}" class="btn btn-primary active" role="button"
+        <a href="{% url 'upload_csv' name=course.name id=assignment.pk %}" class="btn btn-info active" role="button"
             aria-pressed="true">Upload CSV</a>
         <br><br>
         {% endif %}
-
+        <hr>
+    <a href="{% url 'course_page' name=course.name lecture_num=-1%}">&lt;&lt; Go back to course page</a>
     </div>
 </div>
 {% else %}

@@ -4,8 +4,8 @@
 
 {% block content %}
 {% if user.is_authenticated and user == request.user%}
-<div id="main" class="col-sm-5" style="background-color: lightgray; margin: auto; border: 3px solid gray;
-padding: 30px;  margin-top: 20px; text-align: center;">
+<div id="main">
+<div  style="background-color: lightgray; margin: auto; border: 3px solid gray; text-align: center; width:600px; padding:2%; position: fixed;">
 <form method="post">
 {% csrf_token %}
 <h3>Register for course</h3>
@@ -17,5 +17,6 @@ padding: 30px;  margin-top: 20px; text-align: center;">
 <div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
     Invalid Access Attempt!
   </div>
+</div>
 {% endif %}
 {% endblock %}

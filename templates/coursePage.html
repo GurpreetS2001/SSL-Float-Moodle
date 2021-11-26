@@ -8,65 +8,73 @@
 <h1>{{course.name}}</h1>
 <h3>{{course.code}}</h3>
 <hr>
+
 {% if relation.is_teacher %}
 <h4><a href="{% url 'add_assign' name=course.name %}">Create Assignment</a></h4>
-{% endif %}
-
-{% for assignment in assignments %}
-    <hr>
-    <div class="card-body">
-      <h5 class="card-title">Due by {{assignment.deadline}}</h5>
-      <p class="card-text">{{assignment.prob_description}}</p>
-      <a href="{{ assignment.problemfile.url }}" download>Problem statement</a><br>
-      <a href="{% url 'view_assign' name=course.name id=assignment.pk %}">View Assignment</a>
-    </div>
-  
-{% endfor %}
 <hr>
-
-{% if relation.is_teacher %}
-<div class="card" style="width: 90rem; float:left; margin: auto; border: 3px solid gray;">
+<div style="width: 90rem; margin: auto; border: 3px solid gray;">
     <div class="card-body">
         <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <h5>Upload new lecture</h5>
+        <h3><b>Upload new lecture</b></h3>
         {{ form.as_p }}
-        <input type="submit" value="Upload" name="Upload">
+        <input class="btn btn-primary active" type="submit" value="Upload" name="Upload">
         </form>
     </div>
 </div>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><h3>Lectures:</h3><br>
+<hr>
 {% endif %}
-{% if relation.is_student %}<h3>Lectures:</h3>
+
+<h3>Assignments:</h3>
+{% for assignment in assignments %}
+    <hr>
+    <div>
+      <h4>{{assignment.assignment_name}}</h4>
+      <h5>{{assignment.prob_description}}</h5>
+      <h5>Due by {{assignment.deadline}}</h5>
+       <!-- <a href="{{ assignment.problemfile.url }}" download>Download problem statement</a><br> -->
+      <a href="{% url 'view_assign' name=course.name id=assignment.pk %}">View Assignment Status</a>
+    </div>
+    
+{% endfor %}
+<hr>
+<h3>Lectures:</h3>
+
+{% if relation.is_student %}
 {% for lecture in lectures %}
     <hr>
-    <div class="card-body">
-      <h5 class="card-title">{{lecture.0.title}}</h5>
-      <p class="card-text">{{lecture.0.description}}</p>
+    <div>
+      <h4>{{lecture.0.title}}</h4>
+      <p>{{lecture.0.description}}</p>
       <a href="{{ lecture.0.lecturenotes.file.url }}" download>Lecture Notes</a>
+      <br>
+      <br>
       {% if lecture.1 %}
       <form method="post" action="{% url 'course_page' name=course.name lecture_num=lecture.0.pk%}">
         {% csrf_token %}
-        <input type="submit" name="lec_completed" value="Press to Undo">
+        <button type="submit" name="lec_completed" value="Press to Undo" class="btn btn-danger">
+          <span class="fa fa-undo" aria-hidden="true"></span> Undo
+        </button>
       </form>
       {% else %}
       <form method="post" action="{% url 'course_page' name=course.name lecture_num=lecture.0.pk%}">
         {% csrf_token %}
-        <input type="submit" name="lec_incomplete" value="Lecture Done">
+        <button type="submit" name="lec_incomplete" value="Lecture Done" class="btn btn-success">
+        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Mark as Done
+        </button>
       </form>
       {% endif %}
     </div>
   
 {% endfor %}
 {% endif %}
-<hr>
 
 {% if relation.is_teacher %}
 {% for lecture in lectures %}
     <hr>
-    <div class="card-body">
-      <h5 class="card-title">{{lecture.0.title}}</h5>
-      <p class="card-text">{{lecture.0.description}}</p>
+    <div>
+      <h4>{{lecture.0.title}}</h4>
+      <p>{{lecture.0.description}}</p>
       <a href="{{ lecture.0.lecturenotes.file.url }}" download>Lecture Notes</a>
       </form>
     </div>
