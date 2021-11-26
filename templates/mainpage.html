@@ -25,7 +25,7 @@
                 <div class="dropdown" style="float:right; height:30px; margin-right:60px; margin-top:15px;" >
                   <a href="" id="imageDropdown" data-toggle="dropdown">
                     <h4 style="color: white; float:right;">{{ user.first_name }} {{user.last_name}}</h4>
-                    <img src="https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Clipart.png" alt="" width="50px;" height="50px;" style="float: right;">
+                    <i class="glyphicon glyphicon-user" style="font-size: 35px; color:gray;"></i>
                   </a>
                  
                   <ul class="dropdown-menu" role="menu" aria-labelledby="imageDropdown">
@@ -96,9 +96,25 @@
           {% endfor %}
           <br>
           <hr>
-          <span class="fa fa-clock-o" aria-hidden="true" style="font-size:36px; float:left;"></span> <h3>To-Do List</h3>
-          
-          
+          <span class="fa fa-clock-o" aria-hidden="true" style="font-size:36px; float:left;"></span> <h3> To-Do List</h3>
+          {% for course in toDoStudent %}
+           {% for assignment in course.1 %} 
+
+           <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent">
+            <p class="lead fw-normal mb-0"><a href="{% url 'view_assign' name=course.0.name id=assignment.pk %}">{{ course.0.code }} : {{ assignment.assignment_name }}</a></p>
+          </li>
+          <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
+
+            <div class="text-end text-muted">
+             
+                <p class="small mb-0"><i class="glyphicon glyphicon-info-sign" ></i> Due by {{ assignment.deadline }}</p></a>
+            </div>
+          </li>
+
+          <br>
+           {% endfor %}
+          {% endfor %}
+
         </div>
         </div>
         {% else %}

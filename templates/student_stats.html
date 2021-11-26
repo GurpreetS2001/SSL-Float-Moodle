@@ -1,0 +1,69 @@
+{% extends 'mainpage.html' %}
+
+{% block title %} {{ relation.coursename }} {% endblock %}
+
+{% block content %}
+<style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td {
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {background-color: #f2f2f2;}
+
+    tr:hover {background-color: #f2f2f2;}
+
+    th{
+        text-align: left;
+        padding: 8px;
+        background-color: #04AA6D;
+        color: white;
+    }
+</style>
+
+{% if user.is_authenticated and user == request.user %}
+<div id="main">
+    <h2>{{ course.code }}: Grades </h2>
+    <h3>{{ course.name }}</h3>
+    <table>
+        <tr>
+          <th>Assignment Name</th>
+          <th>Course Weightage</th>
+          <th>Marks Range</th>
+          <th>Marks Obtained</th>
+          <th>Contribution to couse total </th>
+        </tr>
+        {% for assignment in assignmentwise_stats %}
+        <tr>
+          <td><a href="{% url 'view_assign' name=course.name id=assignment.0.pk %}">{{ assignment.0.assignment_name }}</a></td>
+          <td>{{ assignment.0.course_weightage }}%</td>
+          <td>0-{{ assignment.0.max_marks }}</td>
+          <td>{{ assignment.1 }}</td>
+          <td>{{ assignment.2 }}%</td>
+          
+        </tr>
+        {% endfor %}
+        <hr>
+        <tr>
+            <td><b> &Sigma; Course Total: </b></td>
+            <td>{{ max_percentage }}%</td>
+            <td>0-{{ max_marks }}</td>
+            <td>{{ total_marks }}</td>
+            <td>{{ percentage_score }}%</td>
+        </tr>
+       
+      </table>
+    <hr>
+    <a href="{% url 'course_page' name=course.name lecture_num=-1%}">&lt;&lt; Go back to course page</a>
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}

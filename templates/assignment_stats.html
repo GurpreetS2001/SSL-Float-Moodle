@@ -1,0 +1,72 @@
+{% extends 'mainpage.html' %}
+
+{% block title %} {{ relation.coursename }} {% endblock %}
+
+{% block content %}
+<style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td {
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {background-color: #f2f2f2;}
+
+    tr:hover {background-color: #f2f2f2;}
+
+    th{
+        text-align: left;
+        padding: 8px;
+        background-color: #04AA6D;
+        color: white;
+    }
+</style>
+{% if user.is_authenticated and user == request.user %}
+<div id="main">
+
+    <h2>{{ course.code }}: Assignment Statistics </h2>
+    <h3>Assignment Name: {{ assignment.assignment_name }}</h3>   
+    <hr>
+    <table>
+        <tr>
+            <td>Max Marks </td>
+            <td>{{ assignment.max_marks }}</td>
+        </tr>
+        <tr>
+            <td>Course Weightage</td>
+            <td>{{assignment.course_weightage }}%</td>
+          </tr>
+        <tr>
+          <td>Mean Marks Obtained</td>
+          <td>{{ mean }}</td>
+        </tr>
+        <tr>
+            <td>Variance in Marks Obtained</td>
+            <td>{{ variance }}</td>
+        </tr>
+       
+      </table>
+    <div style="float: left; margin: auto; width: 50%; margin-bottom: 10px;">
+    <h4 style="text-align: center">Marks Distribution: </h4>
+    {% load static %} 
+    <img src="{% static 'scatterplots/'|add:assignment.assignment_name|add:'.png' %}" style="width:90%; height:500px; ">
+    <hr>
+    </div>
+    <div style="float: right; margin: auto; width: 50%; margin-bottom: 10px;">
+    <h4 style="text-align: center">Percentage Distribution: </h4>
+    <img src="{% static 'histograms/'|add:assignment.assignment_name|add:'.png' %}" style="width:90%; height:500px;">
+    <hr>
+    </div>
+    <a href="{% url 'teacher_course_stats' name=course.name %}">&lt;&lt; Go back to course statistics</a>
+    
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}

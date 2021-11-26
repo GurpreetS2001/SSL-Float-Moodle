@@ -5,10 +5,21 @@
 {% block content %}
 {% if user.is_authenticated and user == request.user %}
 <div id="main">
+  {% if relation.is_student %}
+  <div style="float:right; width:15%; padding:30px;" >
+  <a href="{% url 'student_course_stats' name=course.name %}"> <button class="btn btn-primary active">Check Course Grades</button></a>
+  </div>
+  {% endif %}
+  {% if not relation.is_student %}
+  <div style="float:right; width:15%; padding:30px;" >
+  <a href="{% url 'teacher_course_stats' name=course.name %}"> <button class="btn btn-primary active">Check Course Stats</button></a>
+  </div>
+  {% endif %}
 <h1>{{course.name}}</h1>
-<h3>{{course.code}}</h3>
-<hr>
 
+<h3>{{course.code}}</h3>
+
+<hr>
 {% if relation.is_teacher %}
 <h4><a href="{% url 'add_assign' name=course.name %}">Create Assignment</a></h4>
 <hr>

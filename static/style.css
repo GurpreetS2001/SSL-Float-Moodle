@@ -61,3 +61,10 @@ when you open the side navigation */
 .asteriskField{
     display: none;
 }
+
+th {
+    background-color: #04AA6D;
+    color: white;
+  }
+
+tr:nth-child(even) {background-color: #f2f2f2;}

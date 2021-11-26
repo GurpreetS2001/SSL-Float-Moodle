@@ -58,7 +58,7 @@ class LectureCompleted(models.Model):
 
 class Assignments(models.Model):
     course = models.ForeignKey(Course,on_delete=CASCADE)
-    assignment_name=models.CharField(max_length=100)
+    assignment_name = models.CharField(max_length=100)
     prob_description = models.TextField(blank=True)
     problemfile = models.FileField(upload_to='assignments/problem',null=True,blank=True)
     start_time = models.DateTimeField(auto_now_add=True)

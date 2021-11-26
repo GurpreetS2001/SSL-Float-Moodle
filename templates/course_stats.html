@@ -1,0 +1,117 @@
+{% extends 'mainpage.html' %}
+
+{% block title %} {{ relation.coursename }} {% endblock %}
+
+{% block content %}
+<style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td {
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {background-color: #f2f2f2;}
+
+    tr:hover {background-color: #f2f2f2;}
+
+    th{
+        text-align: left;
+        padding: 8px;
+        background-color: #04AA6D;
+        color: white;
+    }
+</style>
+
+{% if user.is_authenticated and user == request.user %}
+<div id="main">
+
+    <h2>{{ course.code }}: Class Statistics </h2>
+    <h3>{{ course.name }}</h3>   
+    <hr>
+    <h3>Over-all statistics:</h3>
+    <table>
+        <tr>
+            <td>Max Marks </td>
+            <td>{{ max_marks }}</td>
+        </tr>
+        <tr>
+            <td>Max Percentage</td>
+            <td>{{ max_percentage }}</td>
+          </tr>
+        <tr>
+          <td>Mean in Total Marks Obtained</td>
+          <td>{{ stats.0 }}</td>
+        </tr>
+        <tr>
+            <td>Variance in Total Marks Obtained</td>
+            <td>{{ stats.1 }}</td>
+        </tr>
+        <tr>
+            <td>Mean in Percentage Obtained</td>
+            <td>{{ stats.2 }}</td>
+        </tr>
+        <tr>
+            <td>Variance in Percentage Obtained</td>
+            <td>{{ stats.3 }}</td>
+        </tr>
+       
+      </table>
+    <div style="float: left; margin: auto; width: 50%; margin-bottom: 10px;">
+    <h4 style="text-align: center">Total Marks Distribution: </h4>
+    {% load static %} 
+    <img src="{% static 'histograms/'|add:course.name|add:'_score.png' %}" style="width:90%; ">
+    <hr>
+    </div>
+    <div style="float: right; margin: auto; width: 50%; margin-bottom: 10px;">
+    <h4 style="text-align: center">Total Percentage Distribution: </h4>
+    <img src="{% static 'histograms/'|add:course.name|add:'_percentage.png' %}" style="width:90%; ">
+    <hr>
+    </div>
+    <div style="width: 100%;">
+        <br><br><br>
+        <h3>Student-wise statistics:</h3>
+        <table>
+            <tr>
+              <th>Student</th>
+              <th>Total Marks Obtained</th>
+              <th>Total Percentage Obtained</th>
+            </tr>
+            {% for student in students_data %}
+            <tr>
+              <td>{{ student.0 }}</td>
+              <td>{{ student.1 }}</td>
+              <td>{{ student.2 }}%</td>          
+            </tr>
+            {% endfor %}
+          </table>
+        <hr>
+    <h3>Assigment-wise statistics:</h3>
+    <table>
+        <tr>
+          <th>Assignment Name</th>
+          <th>Course Weightage</th>
+          <th>Marks Range</th>
+        </tr>
+        {% for assignment in assignments %}
+        <tr>
+          <td><a href="{% url 'assignment_stats' name=course.name id=assignment.pk %}">{{ assignment.assignment_name }}</a></td>
+          <td>{{ assignment.course_weightage }}%</td>
+          <td>0-{{ assignment.max_marks }}</td>          
+        </tr>
+        {% endfor %}
+       
+      </table>
+    <hr>
+    <a href="{% url 'course_page' name=course.name lecture_num=-1 %}">&lt;&lt; Go back to course page</a>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}

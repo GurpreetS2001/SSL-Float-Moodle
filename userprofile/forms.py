@@ -26,8 +26,9 @@ class AssignmentCreationForm(forms.Form):
     Problem= forms.FileField(label="Upload Problem File")
     Deadline = forms.DateTimeField(widget=forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'}))
     #####
-    max_marks = forms.FloatField(widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Maximum Marks','type':'number'}),label="Maximum Marks")
-    course_weightage = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)],widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Course Weightage','type':'number'}),label="Assignment weightage")
+    assignment_name = forms.CharField(max_length=100)
+    max_marks = forms.FloatField(widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Maximum Marks','type':'number'}),label="")
+    course_weightage = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)],widget=forms.NumberInput(attrs={"rows":5, "cols":20, 'placeholder':'Course Weightage','type':'number'}),label="")
     #####
 
 
