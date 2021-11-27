@@ -1,6 +1,6 @@
 {% extends 'mainpage.html' %}
 
-{% block title %}Add Course{% endblock %}
+{% block title %}Assignment{% endblock %}   <!--dhvanit-->
 
 {% block content %}
 {% if user.is_authenticated and user == request.user%}
@@ -27,7 +27,7 @@ padding: 30px;  margin-top: 20px; text-align: center;">
     {% for solution in solutions %}<p>{{ solution.solutionfeedback.feedback }}</p>{% endfor %}
 {% endif %}
 
-{% if relation.is_teacher %}
+{% if privileges.can_grade %}    <!--dhvanit-->
     <h5>Submissions:</h5>
     {% for solution in solutions %}
         <form method="post">

@@ -7,12 +7,30 @@ from django.contrib.auth.models import User
 from userprofile.models import CsvFeedback
 
 class CourseCreationForm(forms.Form):
-    name = forms.CharField(max_length=50)
-    code = forms.CharField(max_length=10)
+    Course_name = forms.CharField(max_length=50)    #/dhvanit
+    Course_code = forms.CharField(max_length=10)
+    regcode_student = forms.CharField(max_length=10, label="Registration code (students)")
+    regcode_TA = forms.CharField(max_length=10, label="Registration code (TAs)")
+    email_invites = forms.BooleanField(required=False,initial=False, label='Send email invitations to all users?')
 
 class CourseRegistrationForm(forms.Form):
     Course_name = forms.CharField(max_length=50)
     Course_code = forms.CharField(max_length=10)
+    Registration_code = forms.CharField(max_length=10)  #dhvanit
+
+class SetTAPrivilegesForm(forms.Form):  #/dhvanit
+    can_grade = forms.BooleanField(required=False,initial=True,label='Grading assignments')
+    can_create_assignments = forms.BooleanField(required=False,initial=False,label='Creating assignments')
+    can_create_lectures = forms.BooleanField(required=False,initial=False,label='Uploading Lectures')
+
+class ForumQuestionForm(forms.Form):
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows":2, "cols":50, 'placeholder':'Ask a question'}),label="")
+
+class ForumAnswerForm(forms.Form):
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows":2, "cols":50, 'placeholder':'Write a reply'}),label="")
+
+class DirectMessageForm(forms.Form): 
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows":2, "cols":50, 'placeholder':'Write a message'}),label="")   #dhvanit/
 
 class LectureCreationForm(forms.Form):
     title = forms.CharField(max_length=150)

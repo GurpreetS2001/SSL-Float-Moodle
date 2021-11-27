@@ -89,7 +89,7 @@
         <div style="width:20%; float:left;">
           <h3>Recently logged in users:</h3>
           {% for person in logged_in_users %}
-          <p>{{person.first_name}} {{person.last_name}}</p><br>
+          <p><a href="{% url 'profile_page' username=person.username%}">{{person.first_name}} {{person.last_name}}</a></p><br>  <!--dhvanit-->
           {% endfor %}
         </div>
         </div>

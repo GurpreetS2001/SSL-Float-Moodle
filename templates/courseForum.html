@@ -1,0 +1,54 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}Members{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated and user == request.user%}
+<div id="main">
+
+<h4><a href="{% url 'course_page' name=course.name %}">Back to course</a></h4>  <!--dhvanit-->
+<h1>Discussion Forum</h1>
+
+{% if course.forums_enabled %}
+    <div class="col-sm-15" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+    padding: 30px;  margin-top: 20px; text-align: center;">
+    <form method="post">
+        {% csrf_token %}
+        {{ qform }}
+        <input type="submit" value="Post" name="asked_question">
+    </form>
+    </div>
+{% endif %}
+
+
+{% for question,answer_list in answers.items %}
+    <div class="col-sm-15" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+    padding: 30px;  margin-top: 20px; text-align: center;">
+    <p>{{ question.content }}</p>
+    <p align="right">asked by <a href="{% url 'profile_page' username=question.user.username %}">{{ question.user.username }}</a></p>
+    <p align="right">{{ question.created_at }}</p>
+    </div>
+    
+        {% for answer in answer_list %}
+            <hr>
+            <p>{{ answer.content }}</p>
+            <p align="right">Posted by <a href="{% url 'profile_page' username=answer.user.username %}">{{ answer.user.username }}</a></p>
+            <p align="right">{{ answer.created_at }}</p>
+        {% endfor %}
+        <hr>
+        {% if course.forums_enabled %}
+            <form method="post">
+                {% csrf_token %}
+                {{ aform }}
+                <input type="submit" value="Post" name="{{ question.pk }}">
+            </form>
+        {% endif %}
+{% endfor %}
+
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}
