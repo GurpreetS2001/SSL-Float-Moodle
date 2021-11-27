@@ -511,13 +511,13 @@ def disableForum(request,name):
     course = Course.objects.get(name=name)
     course.forums_enabled = False
     course.save()
-    return redirect(reverse('course_page', kwargs={'name':name}))
+    return redirect(reverse('course_page', kwargs={'name':name,'lecture_num':-1}))
 
 def enableForum(request,name):
     course = Course.objects.get(name=name)
     course.forums_enabled = True
     course.save()
-    return redirect(reverse('course_page', kwargs={'name':name})) 
+    return redirect(reverse('course_page', kwargs={'name':name,'lecture_num':-1})) 
 
 def directMessage(request, username):   #/dhvanit
     user = request.user

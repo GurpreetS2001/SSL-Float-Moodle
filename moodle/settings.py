@@ -83,7 +83,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'moodle',
+        'NAME': 'new_moodle',
         'USER': 'molina',
         'PASSWORD': 'sslproject',
         'HOST':'localhost'

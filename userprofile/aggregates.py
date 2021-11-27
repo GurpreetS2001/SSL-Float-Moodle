@@ -33,7 +33,7 @@ def CalculatePercentageCourseCompleted(student_courses,user):
         if total_lectures+total_assignments!=0:
             percentage_course_completed=(completed_lectures_count+percentage_assignments_completed)*100/(total_lectures+total_assignments)
         else:
-            percentage_assignments_completed=0
+            percentage_course_completed=0
         percentages_list.append([course,round(percentage_course_completed,2)])
     return percentages_list
 
