@@ -59,14 +59,25 @@
 {% for assignment in assignments %}
     <hr>
     <div>
-      <h4>{{assignment.assignment_name}}</h4>
-      <h5>{{assignment.prob_description}}</h5>
-      <h5>Due by {{assignment.deadline}}</h5>
+      <h4>{{assignment.0.assignment_name}}</h4>
+      <h5>{{assignment.0.prob_description}}</h5>
+      <h5>Due by {{assignment.0.deadline}}</h5>
        <!-- <a href="{{ assignment.problemfile.url }}" download>Download problem statement</a><br> -->
-      <a href="{% url 'view_assign' name=course.name id=assignment.pk %}">View Assignment Status</a>
+      <a href="{% url 'view_assign' name=course.name id=assignment.0.pk %}">View Assignment Status</a>
     </div>
-    
-    
+    {% if relation.is_student %}
+      {% if assignment.1 %}
+      <div class="alert alert-success" role="alert" style="width:10%;">
+        <h4 class="glyphicon glyphicon-check" aria-hidden="true"></h4> Submitted!
+    </div>
+    {% else %}
+    <div class="alert alert-warning" role="alert" style="width:10%;">
+      <h4 class="glyphicon glyphicon-info-sign" aria-hidden="true"></h4> Not Submitted!
+  </div>
+
+      {% endif %}
+    {% endif %}
+
 {% endfor %}
 <hr>
 
@@ -101,7 +112,7 @@
 {% endfor %}
 {% endif %}
 
-{% if relation.is_teacher %}
+{% if  not relation.is_student %}
 {% for lecture in lectures %}
     <hr>
     <div>

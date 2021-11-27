@@ -16,13 +16,13 @@
  
 </head>
 <body>
-  <div style="height:80px; background-color: black; width:100%; position: sticky; top:0px;">
+  <div style="height:80px; background-color: black; width:100%; position: sticky; top:0px;  z-index: 100;">
     <div class="container" style="float: left; width:5%;">
       <button class="btn" onclick="openNav()" style="border: 5px; margin:20px;"><i class="fa fa-bars" style="color: white; font-size: 25px; "></i></button>
     </div>
                 <div style="float: left; text-align:center; width:80%;"> <h3 style="color: white; text-align: center;  ">Float-MOODLE</h3></div>
 
-                <div class="dropdown" style="float:right; height:30px; margin-right:60px; margin-top:15px;" >
+                <div class="dropdown" style="float:right; margin-right:5%; margin-top:2%;" >
                   <a href="" id="imageDropdown" data-toggle="dropdown">
                     <h4 style="color: white; float:right;">{{ user.first_name }} {{user.last_name}}</h4>
                     <i class="glyphicon glyphicon-user" style="font-size: 35px; color:gray;"></i>
@@ -30,7 +30,7 @@
                  
                   <ul class="dropdown-menu" role="menu" aria-labelledby="imageDropdown">
                     <li role="button"><a href="{% url 'profile_page' username=request.user.username %}">Profile</a></li>
-                    <li role="button"></li>
+                    <li role="button"><a href="{% url 'dm_list' %}">Direct Messages</a></li>
                     <li role="button"><a href="{% url 'logout' %}">Logout</a></li>
                   </ul>
                 </div>
@@ -48,6 +48,7 @@
             <a href="{% url 'add_course' %}">Add Course</a>
             <a href="{% url 'main_page' %}">Dashboard</a>
             <a href="{% url 'register_course' %}">Register for Course</a>
+            <a href="{% url 'dm_list' %}">Check DMs</a>
             
             
         </div>
@@ -92,11 +93,14 @@
         <div style="width:20%; float:right; padding:10px;">
           <h3>Users Who Logged In Recently:</h3>
           {% for person in logged_in_users %}
-          <p><a href="{% url 'profile_page' username=person.username%}">{{person.first_name}} {{person.last_name}}</a></p><br>  <!--dhvanit-->
+          <p class="lead fw-normal mb-0"><a href="{% url 'profile_page' username=person.username%}">{{person.first_name}} {{person.last_name}}</a></p>  <!--dhvanit-->
           {% endfor %}
           <br>
           <hr>
+
+
           <span class="fa fa-clock-o" aria-hidden="true" style="font-size:36px; float:left;"></span> <h3> To-Do List</h3>
+
           {% for course in toDoStudent %}
            {% for assignment in course.1 %} 
 
@@ -114,6 +118,19 @@
           <br>
            {% endfor %}
           {% endfor %}
+
+          {% if ToDoTeacher.0 %}
+          <h3>Grading Pending: </h3>
+            {% for course in ToDoTeacher.1 %} 
+            <h4>{{ course.0.code }} : </h4>
+            {% for assignment in course.1 %} 
+            <p class="lead fw-normal mb-0"><a href="{% url 'view_assign' name=course.0.name id=assignment.pk %}"> {{ assignment.assignment_name }}</a></p>
+
+            {% endfor %} 
+
+            {% endfor %} 
+
+          {% endif %}
 
         </div>
         </div>

@@ -9,8 +9,9 @@ padding: 30px;  margin-top: 20px;">
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-secondary">Log In</button>
-    <a href="{% url 'password_reset' %}">Reset Password</a>
+    <button type="submit" class="btn btn-secondary">Log In</button><br>
+    <hr>
+    Forgot Password? <a href="{% url 'password_reset' %}">Reset Password</a>
   </form>
 </div>
 {% endblock %}

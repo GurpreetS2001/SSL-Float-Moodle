@@ -6,12 +6,12 @@
 {% if user.is_authenticated and user == request.user%}
 <div id="main">
 
-<h4><a href="{% url 'course_page' name=course.name lecture_num=-1%}">Back to course</a></h4>  <!--dhvanit-->
+<h4><a href="{% url 'course_page' name=course.name lecture_num=-1%}">&lt;&lt; Back to course</a></h4>  <!--dhvanit-->
 <h1>Enrolled TAs:</h1>
 
 {% for ta in tas %}
     <hr>
-    <h4>{{ ta.user.username }}</h4>
+    <h4><a href="{% url 'profile_page' username=ta.user.username %}">{{ ta.user.username }}</a></h4>
 {% endfor %}
 <hr>
 
@@ -29,7 +29,7 @@
 <h1>Enrolled Students:</h1>
 {% for student in students %}
     <hr>
-    <h4>{{ student.user.username }}</h4>
+    <h4><a href="{% url 'profile_page' username=student.user.username %}">{{ student.user.username }}</a></h4>
 {% endfor %}
 <hr>
 

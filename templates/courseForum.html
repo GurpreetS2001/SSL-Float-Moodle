@@ -1,48 +1,71 @@
 {% extends 'mainpage.html' %}
 
-{% block title %}Members{% endblock %}
+{% block title %}Discussion Forum{% endblock %}
 
 {% block content %}
 {% if user.is_authenticated and user == request.user%}
 <div id="main">
 
-<h4><a href="{% url 'course_page' name=course.name lecture_num=-1 %}">Back to course</a></h4>  <!--dhvanit-->
-<h1>Discussion Forum</h1>
+<h1>{{ course.code }}: Discussion Forum</h1>
+<h3>{{ course.name }}</h3>
+<h4><a href="{% url 'course_page' name=course.name lecture_num=-1 %}"> &lt;&lt; Back to course page</a></h4>  <!--dhvanit-->
+<hr>
 
 {% if course.forums_enabled %}
-    <div class="col-sm-15" style="background-color: lightgray; margin: auto; border: 3px solid gray;
-    padding: 30px;  margin-top: 20px; text-align: center;">
-    <form method="post">
+<h2> Start a Discussion: </h2>
+    <div>
+    
+    <form method="post" style="text-align: center;"">
         {% csrf_token %}
         {{ qform }}
-        <input type="submit" value="Post" name="asked_question">
+        <input type="submit" value="Post" name="asked_question" class="btn btn-primary active">
     </form>
     </div>
+    <hr>
 {% endif %}
 
+<h2> Previous Discussion Threads: </h2>
+<hr>
 
 {% for question,answer_list in answers.items %}
-    <div class="col-sm-15" style="background-color: lightgray; margin: auto; border: 3px solid gray;
-    padding: 30px;  margin-top: 20px; text-align: center;">
-    <p>{{ question.content }}</p>
-    <p align="right">asked by <a href="{% url 'profile_page' username=question.user.username %}">{{ question.user.username }}</a></p>
-    <p align="right">{{ question.created_at }}</p>
-    </div>
+
+<div class="col-sm-15" style="background-color: lightgray; margin: auto; border: 3px solid gray;
+padding: 30px;  margin-top: 10px; margin-bottom:20px; text-align: center; float:left; width:80%;">
+  <p style="float:left;"><i class="glyphicon glyphicon-question-sign"></i><b> Question: </b>Asked by <a href="{% url 'profile_page' username=question.user.username %}">{{ question.user.username }}</a></p>
+  <p style="float:right;">{{ question.created_at }}</p>
+  <br>
+  <hr>
+  <p style="text-align:left;">
+    {{ question.content }}<br>
+    
+  </p>
+  </div>
 
         {% for answer in answer_list %}
-            <hr>
-            <p>{{ answer.content }}</p>
-            <p align="right">Posted by <a href="{% url 'profile_page' username=answer.user.username %}">{{ answer.user.username }}</a></p>
-            <p align="right">{{ answer.created_at }}</p>
+
+        <div class="col-sm-15" style="background-color: white; margin: auto; border: 3px solid gray;
+        padding: 30px;  margin-top: 20px; margin-bottom:20px; text-align: center; float:right; width:80%;">
+          <p style="float:left;"><b>Re:</b> Posted by <a href="{% url 'profile_page' username=answer.user.username %}">{{ answer.user.username }}</a></p>
+          <p style="float:right;">{{ answer.created_at }}<p>
+          <br>
+          <hr>
+          <p style="text-align:right;">
+            {{ answer.content }}<br>
+          </p>
+      </div>
+
         {% endfor %}
-        <hr>
+        <br>
         {% if course.forums_enabled %}
-            <form method="post">
+        <div style="width:100%;">
+            <form method="post" style="text-align:right;">
                 {% csrf_token %}
                 {{ aform }}
-                <input type="submit" value="Post" name="{{ question.pk }}">
+                <input type="submit" value="Post" name="{{ question.pk }}" class="btn btn-primary active">
             </form>
+        </div>
         {% endif %}
+<hr>
 {% endfor %}
 
 </div>

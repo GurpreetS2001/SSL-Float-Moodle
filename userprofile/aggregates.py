@@ -1,6 +1,6 @@
 import numpy as np
 from django.contrib.auth.models import User
-from userprofile.models import Assignments, Course, CourseUserRelation, CsvFeedback, Lecture, LectureNotes, Solutions, Solutionfeedback,LectureCompleted
+from userprofile.models import *
 import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -169,3 +169,30 @@ def ToDoListStudent(user):
                     incomplete_assignments.append(assignment)
         ToDoList.append([course,incomplete_assignments])
     return ToDoList
+
+def ToDoListTeacher(user):
+    relations=CourseUserRelation.objects.filter(user=user)
+    grading_courses=[]
+    for relation in relations:
+        if relation.is_teacher:
+            grading_courses.append(Course.objects.get(name=relation.course_id))
+        elif relation.is_TA:
+            privilege=Privileges.objects.filter(user=user).get(course=relation.course_id)
+            if privilege:
+                grading_courses.append(Course.objects.get(name=relation.course_id))
+    if len(grading_courses)==0:
+        return [False]
+    else:
+        course_assignments=[]
+        for course in grading_courses:
+            unchecked_assignments=[]
+            assignments=Assignments.objects.filter(course=course)
+            for assignment in assignments:
+                solutions=Solutions.objects.filter(assignment=assignment)
+                for solution in solutions:
+                    try:
+                        Solutionfeedback.objects.get(solution=solution)
+                    except Solutionfeedback.DoesNotExist:
+                        unchecked_assignments.append(assignment)
+            course_assignments.append([course,unchecked_assignments])
+        return [True,course_assignments]

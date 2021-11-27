@@ -18,7 +18,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from datetime import datetime, time,timedelta, tzinfo
 from .forms import *
-from .aggregates import CalculateCourseMarksStudent, CalculatePercentageCourseCompleted, GenerateTeacherStatsAssignment, GenerateTeacherStatsCourse, ToDoListStudent
+from .aggregates import CalculateCourseMarksStudent, CalculatePercentageCourseCompleted, GenerateTeacherStatsAssignment, GenerateTeacherStatsCourse, ToDoListStudent, ToDoListTeacher
 # Create your views here.
 
 class SignUpView(generic.CreateView):
@@ -62,14 +62,16 @@ def MainPage(request):
         print('-----------')
         print(logged_in_users)
         print('-----------')
-        toDoListStudents=ToDoListStudent(current_user)
+        toDoListStudents=ToDoListStudent(request.user)
         learner_courses=CalculatePercentageCourseCompleted(learner_courses,request.user)
+        ToDoListTeachers=ToDoListTeacher(request.user)
         contents={
             "available_courses":available_courses,
             "learner_courses":learner_courses,
             "teacher_courses":teacher_courses,
             "logged_in_users":logged_in_users,
-            "toDoStudent":toDoListStudents
+            "toDoStudent":toDoListStudents,
+            "ToDoTeacher":ToDoListTeachers
         }
         return render(request,'mainpage.html',contents)
 
@@ -131,6 +133,14 @@ def coursePage(request, name , lecture_num):
     course = Course.objects.get(name=name)
     lectures_content = relation.course.lecture_set.all()
     assignments = course.assignments_set.all()
+    submitted_assignment=[]
+    for assignment in assignments:
+        try:
+            sol=Solutions.objects.filter(assignment=assignment).get(student=request.user)
+            submitted_assignment.append(True)
+        except Solutions.DoesNotExist:
+            submitted_assignment.append(False)
+    assignments=zip(assignments,submitted_assignment)
     lectures=[]
     ######
     if request.method == 'POST':
@@ -535,10 +545,29 @@ def directMessage(request, username):   #/dhvanit
             return redirect(reverse('direct_message', kwargs={'username':username}))
     else:
         form = DirectMessageForm()
+    enrolled_courses=CourseUserRelation.objects.filter(user=request.user)
+    allow_dms = True
+    for relation in enrolled_courses:
+        if not relation.course.forums_enabled:
+            allow_dms=(not relation.is_student)
     args={
         'user':user,
         'user2':user2,
         'all_messages':all_messages,
-        'form':form
+        'form':form,
+        'allow_dms':allow_dms
     }
     return render(request, 'directMessage.html', args)  #dhvanit/
+
+def seeDMlist(request):
+    sent=DirectMessage.objects.filter(sender=request.user)
+    received=DirectMessage.objects.filter(receiver=request.user)
+    messaged_users = set()
+    for message in sent:
+        messaged_users.add(message.receiver)
+    for message in received:
+        messaged_users.add(message.sender)
+    args={
+        'messaged_users':messaged_users
+    }
+    return render(request, 'dmList.html',args)

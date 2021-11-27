@@ -1,0 +1,50 @@
+{% extends 'mainpage.html' %}
+
+{% block title %}Direct messages{% endblock %}
+
+{% block content %}
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td {
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {background-color: #f2f2f2;}
+
+  tr:hover {background-color: #f2f2f2;}
+
+  th{
+      text-align: left;
+      padding: 8px;
+      background-color: #04AA6D;
+      color: white;
+  }
+</style>
+
+
+{% if user.is_authenticated and user == request.user%}
+<div id="main">
+<br>
+<center>
+  <table style="width:80%; ">
+    <tr><th>Users you have contact with</th></tr>
+    {% for person in messaged_users %}
+    <tr>
+      <td><a href="{% url 'direct_message' username=person.username %}">{{ person.first_name }} {{ person.last_name }}</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</center>
+
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+  </div>
+{% endif %}
+{% endblock %}
