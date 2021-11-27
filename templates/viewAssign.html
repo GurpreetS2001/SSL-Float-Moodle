@@ -54,7 +54,7 @@
         {% endfor %}
         {% endif %}
 
-        {% if relation.is_teacher %}
+        {% if privileges.can_grade %}    <!--dhvanit-->
         <hr>
         <h3><b>Submissions:</b></h3>
         {% for solution in solutions %}

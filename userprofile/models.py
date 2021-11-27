@@ -21,9 +21,37 @@ class Course(models.Model):
     color = models.CharField(max_length=7,default='#007bff')
     user = models.ManyToManyField(User)  #not sure about on_delete
     code = models.CharField(max_length=10,null=True)
+    regcode_student = models.CharField(max_length=10,null=True) #dhvanit
+    regcode_TA = models.CharField(max_length=10,null=True)  #dhvanit
+    forums_enabled = models.BooleanField(default = True)
 
     def __str__(self):
         return self.name
+
+class Privileges(models.Model): #/dhvanit
+    user = models.ForeignKey(User,on_delete=CASCADE)
+    course = models.ForeignKey(Course,on_delete=CASCADE)
+    can_grade = models.BooleanField(default = False)
+    can_create_assignments = models.BooleanField(default = False)
+    can_create_lectures = models.BooleanField(default = False)
+
+class ForumQuestions(models.Model):
+    course = models.ForeignKey(Course,on_delete=CASCADE)
+    user = models.ForeignKey(User,default=None,on_delete=CASCADE)   #can remove default I think
+    created_at = models.DateTimeField(auto_now_add=True)
+    content = models.TextField(blank=True)
+
+class ForumAnswers(models.Model):
+    question = models.ForeignKey(ForumQuestions,on_delete=CASCADE)
+    user = models.ForeignKey(User,default=None,on_delete=CASCADE)   #can remove default I think
+    created_at = models.DateTimeField(auto_now_add=True)
+    content = models.TextField(blank=True)
+
+class DirectMessage(models.Model):
+    sender = models.ForeignKey(User, on_delete=CASCADE, related_name='sender')
+    receiver = models.ForeignKey(User, on_delete=CASCADE, related_name='receiver')
+    sent_at = models.DateTimeField(auto_now_add=True)
+    content = models.TextField(blank=True) 
 
 
 class CourseUserRelation(models.Model):
@@ -31,6 +59,7 @@ class CourseUserRelation(models.Model):
     course = models.ForeignKey(Course,on_delete=CASCADE)
     is_teacher = models.BooleanField(default=False)
     is_student = models.BooleanField(default=False)
+    is_TA = models.BooleanField(default = False)  
 
     
 class Lecture(models.Model):

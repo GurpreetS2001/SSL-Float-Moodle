@@ -1,6 +1,6 @@
 {% extends 'mainpage.html' %}
 
-{% block title %} {{ relation.coursename }} {% endblock %}
+{% block title %} {{ course.code }}: {{ course.name }} {% endblock %}
 
 {% block content %}
 {% if user.is_authenticated and user == request.user %}
@@ -18,11 +18,30 @@
 <h1>{{course.name}}</h1>
 
 <h3>{{course.code}}</h3>
+<hr>
+
+<h4><a href="{% url 'course_members' name=course.name %}">View course members</a></h4>  <!--dhvanit-->
 
 <hr>
-{% if relation.is_teacher %}
+<h4>
+  <a href="{% url 'course_forum' name=course.name %}">Discussion Forum</a>
+  {% if relation.is_teacher %}
+    {% if course.forums_enabled %}<a href="{% url 'disable_forum' name=course.name %}">(Disable)</a>
+    {% else %}<a href="{% url 'enable_forum' name=course.name %}">(Enable)</a>
+    {% endif %}
+  {% endif %}
+</h4>  <!--dhvanit-->
+
+<hr>  <!--dhvanit-->
+
+
+{% if privileges.can_create_assignments %} 
 <h4><a href="{% url 'add_assign' name=course.name %}">Create Assignment</a></h4>
 <hr>
+{% endif %}
+
+
+{% if privileges.can_create_lectures %} <!--dhvanit-->
 <div style="width: 90rem; margin: auto; border: 3px solid gray;">
     <div class="card-body">
         <form method="post" enctype="multipart/form-data">
@@ -49,6 +68,7 @@
     
 {% endfor %}
 <hr>
+
 <h3>Lectures:</h3>
 
 {% if relation.is_student %}
