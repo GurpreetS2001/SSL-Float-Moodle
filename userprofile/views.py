@@ -107,20 +107,30 @@ def registerCourse(request):
     if request.method == 'POST':
         form = CourseRegistrationForm(request.POST)
         if form.is_valid():
-            newCourse = Course.objects.get(name=form.cleaned_data['Course_name'])
-            if newCourse.code==form.cleaned_data['Course_code'] :
-                newCourse.user.add(request.user)
-                if form.cleaned_data['Registration_code']==newCourse.regcode_student :  #/dhvanit
-                    CourseUserRelation.objects.create(user=request.user, course=newCourse, is_student = True)
-                    Privileges.objects.create(user=request.user, course=newCourse)
-                elif form.cleaned_data['Registration_code']==newCourse.regcode_TA :
-                    CourseUserRelation.objects.create(user=request.user, course=newCourse, is_TA = True)
-                    Privileges.objects.create(user=request.user, course=newCourse, can_grade=True, can_create_assignments=False, can_create_lectures=False)
+            try:
+                newCourse = Course.objects.get(name=form.cleaned_data['Course_name'])
+                if newCourse.code==form.cleaned_data['Course_code'] :
+                    newCourse.user.add(request.user)
+                    if form.cleaned_data['Registration_code']==newCourse.regcode_student :  #/dhvanit
+                        CourseUserRelation.objects.create(user=request.user, course=newCourse, is_student = True)
+                        Privileges.objects.create(user=request.user, course=newCourse)
+                    elif form.cleaned_data['Registration_code']==newCourse.regcode_TA :
+                        CourseUserRelation.objects.create(user=request.user, course=newCourse, is_TA = True)
+                        Privileges.objects.create(user=request.user, course=newCourse, can_grade=True, can_create_assignments=False, can_create_lectures=False)
+                    else:
+                        try:
+                            if CourseUserRelation.objects.filter(user=request.user).get(course=newCourse).is_teacher:
+                                messages.warning(request,"You Cant Register In Your Own Course ,My Boi")
+                                return redirect(reverse('register_course'))
+                        except CourseUserRelation.DoesNotExist: 
+                            messages.warning(request,"Invalid Registration Code")
+                            return redirect(reverse('register_course'))
                 else:
+                    messages.warning(request,"Invalid Course Code")
                     return redirect(reverse('register_course'))
-            else:
+            except Course.DoesNotExist:
+                messages.warning(request,'Incorrect Course Name')
                 return redirect(reverse('register_course'))
-            return redirect(reverse('main_page'))
         else:
             return redirect(reverse('register_course'))
     else:
@@ -363,7 +373,7 @@ def CsvFeedbackView(request,name,id):
                         if User.objects.filter(username=row[0]).exists():
                             student=User.objects.get(username=row[0])
                             solution = Solutions.objects.filter(student=student,assignment=assignment)
-                            if Solutionfeedback.objects.filter(solution=solution[0]).exists:
+                            if Solutionfeedback.objects.filter(solution=solution[0]).exists():
                                 ######
                                 solution_feedback_object = Solutionfeedback.objects.get(solution=solution[0])
                                 solution_feedback_object.feedback=",".join(row[1:-1])
@@ -571,3 +581,11 @@ def seeDMlist(request):
         'messaged_users':messaged_users
     }
     return render(request, 'dmList.html',args)
+
+def studentGradesPage(request):
+    reg_courses=Course.objects.filter(user=request.user)
+    learner_courses=[]
+    for course in reg_courses:
+        if CourseUserRelation.objects.filter(course=course).get(user=request.user).is_student:
+            learner_courses.append(course)
+    return render(request,'studentGrades.html',{'learner_courses':learner_courses})

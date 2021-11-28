@@ -1,0 +1,50 @@
+{% extends 'mainpage.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Grades{% endblock %}
+
+{% block content %}
+<style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td {
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {background-color: #f2f2f2;}
+
+    tr:hover {background-color: #f2f2f2;}
+
+    th{
+        text-align: left;
+        padding: 8px;
+        background-color: #04AA6D;
+        color: white;
+    }
+</style>
+
+{% if user.is_authenticated and user == request.user %}
+<div id="main">
+    <h3>Grades</h3>
+    <center>
+        <table style="width:80%; ">
+          <tr><th>Course Name</th></tr>
+          {% for course in learner_courses %}
+          <tr>
+            <td><a href="{% url 'student_course_stats' name=course.name %}">{{ course.code }}: {{ course.name }}</a></td>
+          </tr>
+          {% endfor %}
+        </table>
+      </center>
+
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" style="margin-left: 20%; margin-top: 20px;">
+    Invalid Access Attempt!
+</div>
+{% endif %}
+{% endblock %}

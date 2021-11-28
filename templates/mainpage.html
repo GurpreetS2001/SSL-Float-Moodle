@@ -31,6 +31,7 @@
                   <ul class="dropdown-menu" role="menu" aria-labelledby="imageDropdown">
                     <li role="button"><a href="{% url 'profile_page' username=request.user.username %}">Profile</a></li>
                     <li role="button"><a href="{% url 'dm_list' %}">Direct Messages</a></li>
+                    <li role="button"><a href="{% url 'student_grades' %}">Grades</a></li> 
                     <li role="button"><a href="{% url 'logout' %}">Logout</a></li>
                   </ul>
                 </div>

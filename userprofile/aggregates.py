@@ -59,7 +59,7 @@ def CalculateCourseMarksStudent(learner_course,user):
             student_assignmentwise_stats.append([assignment,0.0,0.0])
         max_marks+=assignment.max_marks
         max_percentage+=assignment.course_weightage
-    return student_assignmentwise_stats,total_marks,percentage_score,max_marks,max_percentage
+    return student_assignmentwise_stats,round(total_marks,2),round(percentage_score,2),round(max_marks,2),round(max_percentage,2)
 
 
 def GenerateTeacherStatsAssignment(course,assignment):
@@ -88,7 +88,7 @@ def GenerateTeacherStatsAssignment(course,assignment):
     plt.clf()
     plt.cla()
     GenerateHistogram(marks_array,"Marks","Students",hist_url,None,assignment)
-    return mean,variance,scatter_url,hist_url
+    return round(mean,2),round(variance,2),scatter_url,hist_url
 
 
 def GenerateHistogram(array,x_label,y_label,url,course,assignment):
@@ -140,7 +140,10 @@ def GenerateTeacherStatsCourse(teacher_course):
     percent_histogram_url=os.path.join(base_dir,f'static/histograms/{teacher_course.name}_percentage.png')
     GenerateHistogram(np.array(total_score_list),"Marks","Students",score_histogram_url,teacher_course,None)
     GenerateHistogram(np.array(percent_score_list),"Weighted Score","Students",percent_histogram_url,teacher_course,None)
-    return all_students,total_score_list,percent_score_list,score_histogram_url,percent_histogram_url,stats,max_marks,max_percentage
+    total_score_list=[round(elem,2) for elem in total_score_list]
+    percent_score_list=[round(elem,2) for elem in percent_score_list]
+    stats = [round(elem,2) for elem in stats]
+    return all_students,total_score_list,percent_score_list,score_histogram_url,percent_histogram_url,stats,round(max_marks,2),round(max_percentage,2)
 
 
 def GetCourseLearners(teacher_course):
@@ -194,5 +197,6 @@ def ToDoListTeacher(user):
                         Solutionfeedback.objects.get(solution=solution)
                     except Solutionfeedback.DoesNotExist:
                         unchecked_assignments.append(assignment)
+                        break
             course_assignments.append([course,unchecked_assignments])
         return [True,course_assignments]

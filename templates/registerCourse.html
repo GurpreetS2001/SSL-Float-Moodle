@@ -5,6 +5,13 @@
 {% block content %}
 {% if user.is_authenticated and user == request.user%}
 <div id="main">
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}" {% endif %}> <h4 class="alert alert-warning" role="alert" style="width:30%; margin-top: 20px;">{{ message }} </h4></li>
+    {% endfor %}
+</ul>
+{% endif %}
 <div  style="background-color: lightgray; margin: auto; border: 3px solid gray; text-align: center; width:600px; padding:2%; position: fixed;">
 <form method="post">
 {% csrf_token %}

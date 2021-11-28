@@ -10,6 +10,7 @@ urlpatterns = [
     path('courses/add_new_course/',views.addCourse,name='add_course'),
     path('courses/register/',views.registerCourse,name='register_course'),
     path('users/direct_message/',views.seeDMlist,name='dm_list'),    #dhvanit
+    path('users/learner_courses/',views.studentGradesPage,name='student_grades'),
     path('users/<str:username>/',views.profilePage,name='profile_page'),
     path('courses/<str:name>/add_new_assignment/',views.addAssign,name='add_assign'),
     path('courses/<str:name>/assignment/<int:id>/',views.viewAssign,name='view_assign'),
