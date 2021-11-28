@@ -50,7 +50,8 @@ def CalculateCourseMarksStudent(learner_course,user):
             solution=Solutions.objects.filter(assignment=assignment).get(student=user)
             try:
                 marks=Solutionfeedback.objects.get(solution=solution).marks_obtained
-                student_assignmentwise_stats.append([assignment,marks,assignment.course_weightage*marks/assignment.max_marks])
+                dummy=assignment.course_weightage*marks/assignment.max_marks
+                student_assignmentwise_stats.append([assignment,marks,round(dummy,2)])
                 total_marks+=marks
                 percentage_score+=assignment.course_weightage*marks/assignment.max_marks
             except Solutionfeedback.DoesNotExist:
@@ -143,8 +144,10 @@ def GenerateTeacherStatsCourse(teacher_course):
     total_score_list=[round(elem,2) for elem in total_score_list]
     percent_score_list=[round(elem,2) for elem in percent_score_list]
     stats = [round(elem,2) for elem in stats]
-    return all_students,total_score_list,percent_score_list,score_histogram_url,percent_histogram_url,stats,round(max_marks,2),round(max_percentage,2)
-
+    if len(all_students)!=0:
+        return all_students,total_score_list,percent_score_list,score_histogram_url,percent_histogram_url,stats,round(max_marks,2),round(max_percentage,2)
+    else:
+        return all_students,total_score_list,percent_score_list,score_histogram_url,percent_histogram_url,stats,0,0
 
 def GetCourseLearners(teacher_course):
     all_registered_users=CourseUserRelation.objects.filter(course=teacher_course)

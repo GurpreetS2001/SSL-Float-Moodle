@@ -125,6 +125,7 @@ def registerCourse(request):
                         except CourseUserRelation.DoesNotExist: 
                             messages.warning(request,"Invalid Registration Code")
                             return redirect(reverse('register_course'))
+                    return redirect(reverse('main_page'))
                 else:
                     messages.warning(request,"Invalid Course Code")
                     return redirect(reverse('register_course'))

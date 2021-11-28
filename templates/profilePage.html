@@ -11,17 +11,32 @@
     {% endif %} 
         <hr>
         <h2><b>User Details</b></h2>
+        <h4>Username: {{ visiting_user.username }}</h4>
+        <h4>Email-id: {{ visiting_user.email }} </h4>
 
         {% if user != visiting_user %} <!--dhvanit-->
           <a href="{% url 'direct_message' username=visiting_user.username %}">Direct Message</a>
+        <hr>
+        <h2><b>Course Details</b></h2>
+
+        <h3>Teaching Courses</h3> <!--dhvanit-->
+        {% for course in teacher_courses %}
+        {{course.code}}: {{course.name}}<br>
+        {% endfor %}
+        
+        <h3>Registered for Courses</h3> <!--dhvanit-->
+        {% for course in learner_courses %}
+        {{course.code}}: {{course.name}}<br>
+        {% endfor %}
+
         {% endif %} <!--dhvanit-->
-        <h4>Username: {{ visiting_user.username }}</h4>
-        <h4>Email-id: {{ visiting_user.email }} </h4>
+
+        
         {% if user == visiting_user %} <!--dhvanit-->
           <p class="lead">
             <a class="btn btn-primary btn-lg" href="{% url 'updateProfile' %}" role="button">Edit Profile</a>
           </p>  <!--dhvanit-->
-        {% endif %}
+        
 
         <!-- <h4>Username: {{ user.username }}</h4>
         <h4>Email-id: {{ user.email }} </h4>
@@ -40,6 +55,8 @@
         {% for course in learner_courses %}
         <a href="{% url 'course_page' name=course.name lecture_num=-1%}">{{course.code}}: {{course.name}}</a><br>
         {% endfor %}
+
+        {% endif %}
       </div>
 </div>
 {% else %}
